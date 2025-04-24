@@ -1,219 +1,260 @@
-<header
-  [class]="
-    !isAuthorized ? 'unauth' : 'navbar sticky-top flex-md-nowrap p-0 shadow'
-  "
->
-  <a
-    class="navbar-brand me-0 ps-3"
-    href="/"
-    *ngIf="currentRole == systemRoles.Administrator"
-  >
-    Administration
-  </a>
-  <a
-    class="navbar-brand me-0 ps-3"
-    href="/"
-    *ngIf="currentRole == systemRoles.Driver"
-  >
-    Driver
-  </a>
-  <a
-    class="navbar-brand me-0 ps-3"
-    href="/"
-    *ngIf="currentRole == systemRoles.Company"
-  >
-    Company
-  </a>
-  <form class="d-flex" *ngIf="isAuthorized">
-    <button class="btn btn-nick">{{ fullName }}</button>
-  </form>
-</header>
-
-<div [class]="isAuthorized ? 'container-fluid' : ''">
-  <div class="bg-white" style="height: 100vh" *ngIf="!isAuthorized">
-    <router-outlet></router-outlet>
-  </div>
-
-  <div class="row" *ngIf="isAuthorized">
-    <div class="sidebar border-right col-md-3 col-lg-2 p-0">
-      <div class="offcanvas-md offcanvas-end">
-        <div class="offcanvas-body flex-column overflow-y-auto">
-          <ul class="nav flex-column mt-3">
-            <ng-container *ngIf="currentRole == systemRoles.Driver">
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-fuel-pump"
-                  [class.active]="matchUrlPart('/drivers/stations')"
-                  href="/drivers/stations"
-                >
-                  Stations
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-wallet"
-                  *ngIf="canSeeTransactions"
-                  [class.active]="matchUrlPart('/drivers/transactions')"
-                  href="/drivers/transactions"
-                >
-                  Transactions
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-receipt"
-                  *ngIf="canSeeInvoices"
-                  [class.active]="matchUrlPart('/drivers/invoices')"
-                  href="/drivers/invoices"
-                >
-                  Invoices
-                </a>
-              </li>
-            </ng-container>
-
-            <ng-container *ngIf="currentRole == systemRoles.Administrator">
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-fuel-pump"
-                  [class.active]="matchUrlPart('/administrators/stations')"
-                  href="/administrators/stations"
-                >
-                  Stations
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-truck"
-                  [class.active]="matchUrlPart('/administrators/drivers')"
-                  href="/administrators/drivers"
-                >
-                  Drivers
-                </a>
-              </li>
-            </ng-container>
-
-            <ng-container *ngIf="currentRole == systemRoles.Company">
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-fuel-pump"
-                  [class.active]="matchUrlPart('/drivers/stations')"
-                  href="/drivers/stations"
-                >
-                  Stations
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-wallet"
-                  [class.active]="matchUrlPart('/companies/transactions')"
-                  href="/companies/transactions"
-                >
-                  Transactions
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-receipt"
-                  [class.active]="matchUrlPart('/companies/invoices')"
-                  href="/companies/invoices"
-                >
-                  Invoices
-                </a>
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-truck"
-                  [class.active]="matchUrlPart('/companies/drivers')"
-                  href="/companies/drivers"
-                >
-                  Drivers
-                </a>
-              </li>
-            </ng-container>
-          </ul>
-
-          <br />
-
-          <ul class="nav flex-column mb-auto border-top pt-3">
-            <ng-container *ngIf="currentRole == systemRoles.Driver">
-              <li class="nav-item">
-                <a
-                  class="nav-link d-flex align-items-center gap-2 bi-key"
-                  href="javascript:void(0)"
-                  (click)="onChangePassword(passwordContent)"
-                >
-                  Change Password
-                </a>
-              </li>
-            </ng-container>
-            <li class="nav-item">
-              <a
-                class="nav-link d-flex align-items-center gap-2 bi-universal-access-circle"
-                (click)="onLogout()"
-              >
-                Sign out
+<div class="app-container">
+  <!-- Header -->
+  <header [class]="!isAuthorized ? 'unauth' : 'navbar sticky-top p-0 shadow'">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <!-- Brand Name -->
+      <div class="d-flex align-items-center">
+        <button *ngIf="isAuthorized" 
+                class="navbar-toggler d-md-none me-2" 
+                type="button" 
+                (click)="toggleSidebar()">
+          <i class="bi bi-list text-white"></i>
+        </button>
+        
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <span *ngIf="currentRole == systemRoles.Administrator">Administration</span>
+          <span *ngIf="currentRole == systemRoles.Driver">Driver</span>
+          <span *ngIf="currentRole == systemRoles.Company">Company</span>
+        </a>
+      </div>
+      
+      <!-- User Menu -->
+      <div class="d-flex align-items-center" *ngIf="isAuthorized">
+        <div class="dropdown">
+          <button class="btn btn-user dropdown-toggle" 
+                  type="button" 
+                  id="userMenu" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false">
+            <i class="bi bi-person-circle me-2"></i>
+            {{ fullName }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userMenu">
+            <li *ngIf="currentRole == systemRoles.Driver">
+              <a class="dropdown-item" (click)="onChangePassword(passwordContent)">
+                <i class="bi bi-key me-2"></i> Change Password
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" (click)="onLogout()">
+                <i class="bi bi-box-arrow-right me-2"></i> Sign out
               </a>
             </li>
           </ul>
         </div>
       </div>
     </div>
-    <main class="col-md-9 p-0 col-lg-10">
-      <div class="bg-white m-3 ps-3 main-content">
-        <router-outlet></router-outlet>
+  </header>
+
+  <div class="content-container">
+    <!-- Authentication Pages (Login/Register) -->
+    <div class="auth-container" *ngIf="!isAuthorized">
+      <router-outlet></router-outlet>
+    </div>
+
+    <!-- Main Content for Authenticated Users -->
+    <div class="dashboard-container" *ngIf="isAuthorized">
+      <!-- Sidebar Navigation -->
+      <div class="sidebar" [class.show]="sidebarVisible">
+        <div class="sidebar-inner">
+          <!-- Close button for mobile view -->
+          <div class="d-md-none text-end p-2">
+            <button type="button" class="btn-close-sidebar" aria-label="Close" (click)="toggleSidebar()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          
+          <!-- Driver Menu -->
+          <ng-container *ngIf="currentRole == systemRoles.Driver">
+            <div class="sidebar-heading">Navigation</div>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/drivers/stations')"
+                   href="/drivers/stations">
+                  <i class="bi bi-fuel-pump"></i>
+                  Stations
+                </a>
+              </li>
+              <li class="nav-item" *ngIf="canSeeTransactions">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/drivers/transactions')"
+                   href="/drivers/transactions">
+                  <i class="bi bi-wallet"></i>
+                  Transactions
+                </a>
+              </li>
+              <li class="nav-item" *ngIf="canSeeInvoices">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/drivers/invoices')"
+                   href="/drivers/invoices">
+                  <i class="bi bi-receipt"></i>
+                  Invoices
+                </a>
+              </li>
+            </ul>
+          </ng-container>
+
+          <!-- Administrator Menu -->
+          <ng-container *ngIf="currentRole == systemRoles.Administrator">
+            <div class="sidebar-heading">Administration</div>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/administrators/stations')"
+                   href="/administrators/stations">
+                  <i class="bi bi-fuel-pump"></i>
+                  Stations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/administrators/drivers')"
+                   href="/administrators/drivers">
+                  <i class="bi bi-truck"></i>
+                  Drivers
+                </a>
+              </li>
+            </ul>
+          </ng-container>
+
+          <!-- Company Menu -->
+          <ng-container *ngIf="currentRole == systemRoles.Company">
+            <div class="sidebar-heading">Management</div>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/drivers/stations')"
+                   href="/drivers/stations">
+                  <i class="bi bi-fuel-pump"></i>
+                  Stations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/companies/transactions')"
+                   href="/companies/transactions">
+                  <i class="bi bi-wallet"></i>
+                  Transactions
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/companies/invoices')"
+                   href="/companies/invoices">
+                  <i class="bi bi-receipt"></i>
+                  Invoices
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" 
+                   [class.active]="matchUrlPart('/companies/drivers')"
+                   href="/companies/drivers">
+                  <i class="bi bi-truck"></i>
+                  Drivers
+                </a>
+              </li>
+            </ul>
+          </ng-container>
+
+          <!-- Account Menu (Bottom) -->
+          <div class="sidebar-footer">
+            <ul class="nav flex-column">
+              <li class="nav-item" *ngIf="currentRole == systemRoles.Driver">
+                <a class="nav-link" (click)="onChangePassword(passwordContent)">
+                  <i class="bi bi-key"></i>
+                  Change Password
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" (click)="onLogout()">
+                  <i class="bi bi-box-arrow-left"></i>
+                  Sign out
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <p class="text-center">
-        <strong class="text-danger">Version: {{ appVersion }}</strong>
-      </p>
-    </main>
+      
+      <!-- Main Content Area -->
+      <main class="main-wrapper">
+        <div class="main-content fade-in">
+          <router-outlet></router-outlet>
+        </div>
+        <div class="version-indicator">
+          <span class="text-danger">Version: {{ appVersion }}</span>
+        </div>
+      </main>
+    </div>
   </div>
 </div>
 
+<!-- Password Change Modal -->
 <ng-template #passwordContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Change Password</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('')"></button>
+  </div>
   <form [formGroup]="passwordForm" (ngSubmit)="submitChangePassword(modal)">
-    <div class="modal-header">
-      <h4 class="modal-title">Password</h4>
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Close"
-        (click)="modal.dismiss('')"
-      ></button>
-    </div>
     <div class="modal-body">
-      <div class="mb-4">
+      <div class="mb-3">
         <label class="form-label required">Old Password</label>
-        <input
-          type="password"
-          formControlName="oldPassword"
-          class="form-control"
-        />
+        <div class="input-wrapper">
+          <i class="bi bi-lock prefix-icon"></i>
+          <input type="password" formControlName="oldPassword" class="form-control"
+                [class.is-invalid]="passwordForm.get('oldPassword')?.invalid && 
+                                   passwordForm.get('oldPassword')?.touched">
+        </div>
+        <div class="error-message" *ngIf="passwordForm.get('oldPassword')?.errors?.required && 
+                                         passwordForm.get('oldPassword')?.touched">
+          Old password is required.
+        </div>
       </div>
-      <div class="mb-4">
+      
+      <div class="mb-3">
         <label class="form-label required">New Password</label>
-        <input
-          type="password"
-          formControlName="newPassword"
-          class="form-control"
-        />
+        <div class="input-wrapper">
+          <i class="bi bi-shield-lock prefix-icon"></i>
+          <input type="password" formControlName="newPassword" class="form-control"
+                [class.is-invalid]="passwordForm.get('newPassword')?.invalid && 
+                                   passwordForm.get('newPassword')?.touched">
+        </div>
+        <div class="error-message" *ngIf="passwordForm.get('newPassword')?.errors?.required && 
+                                        passwordForm.get('newPassword')?.touched">
+          New password is required.
+        </div>
+        <div class="error-message" *ngIf="passwordForm.get('newPassword')?.errors?.minlength">
+          Password must be at least 2 characters.
+        </div>
       </div>
-      <div class="mb-4">
+      
+      <div class="mb-3">
         <label class="form-label required">Confirm Password</label>
-        <input
-          type="password"
-          formControlName="confirmPassword"
-          class="form-control"
-        />
+        <div class="input-wrapper">
+          <i class="bi bi-shield-check prefix-icon"></i>
+          <input type="password" formControlName="confirmPassword" class="form-control"
+                [class.is-invalid]="passwordForm.get('confirmPassword')?.invalid && 
+                                   passwordForm.get('confirmPassword')?.touched">
+        </div>
+        <div class="error-message" *ngIf="passwordForm.errors?.passwordMatch && 
+                                        passwordForm.get('confirmPassword')?.touched">
+          Passwords do not match.
+        </div>
       </div>
     </div>
+    
     <div class="modal-footer">
-      <button
-        type="submit"
-        class="btn btn-success"
-        [disabled]="passwordForm.invalid"
-      >
-        <i class="bi bi-key"></i> Change
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('')">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button type="submit" class="btn btn-success" [disabled]="passwordForm.invalid">
+        <i class="bi bi-check-circle"></i> Change Password
       </button>
     </div>
   </form>
 </ng-template>
+
+<!-- Overlay for mobile sidebar -->
+<div class="sidebar-overlay" *ngIf="sidebarVisible" (click)="toggleSidebar()"></div>

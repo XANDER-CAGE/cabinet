@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   canSeeTransactions: boolean;
   canSeeInvoices: boolean;
   userInfo: UserInfo;
+  sidebarVisible = false;
 
   constructor(
     private auth: AuthService,
@@ -62,8 +63,14 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUserInfo();
-
     this.reloadVersion();
+    
+    // Close sidebar when route changes on mobile
+    if (window.innerWidth < 768) {
+      this.location.onUrlChange(() => {
+        this.sidebarVisible = false;
+      });
+    }
   }
 
   get currentRole(): string {
@@ -83,35 +90,58 @@ export class AppComponent implements OnInit {
   }
 
   onLogout(): void {
-    this.auth.logOut();
-    location.href = '/';
+    // Show confirmation before logout
+    if (confirm('Are you sure you want to sign out?')) {
+      this.auth.logOut();
+      location.href = '/';
+    }
   }
 
   onChangePassword(content: TemplateRef<any>): void {
+    // Reset form before opening
+    this.passwordForm.reset();
+    
     this.modal.open(content, {
       centered: true,
       keyboard: false,
       scrollable: true,
       backdrop: 'static',
+      size: 'md'
     });
   }
 
   submitChangePassword(modal: any): void {
     if (this.passwordForm.invalid) {
+      // Mark all fields as touched to trigger validation messages
+      Object.keys(this.passwordForm.controls).forEach(key => {
+        const control = this.passwordForm.get(key);
+        if (control) {
+          control.markAsTouched();
+        }
+      });
       return;
     }
 
     this.service
       .changePassword(this.passwordForm.value)
-      .subscribe((response) => {
-        if (response.success) {
-          this.passwordForm.reset();
-          modal.close();
-          this.showSuccess('Password has been changed');
-        } else {
-          this.showError(response.error);
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.passwordForm.reset();
+            modal.close();
+            this.showSuccess('Password has been changed successfully');
+          } else {
+            this.showError(response.error || 'An error occurred while changing the password');
+          }
+        },
+        error: (err) => {
+          this.showError('Failed to change password. Please try again.');
         }
       });
+  }
+  
+  toggleSidebar(): void {
+    this.sidebarVisible = !this.sidebarVisible;
   }
 
   private reloadVersion(): void {
@@ -119,17 +149,28 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.service.getConfig().subscribe((response) => {
-      if (!response.data) {
-        return;
-      }
+    this.service.getConfig().subscribe({
+      next: (response) => {
+        if (!response.data) {
+          return;
+        }
 
-      var config = <ServerConfig>response.data;
-      TrimbleMaps.setAPIKey(config.mapKey);
+        const config = response.data as ServerConfig;
+        if (config.mapKey) {
+          TrimbleMaps.setAPIKey(config.mapKey);
+        }
 
-      if (this.appVersion != config.version) {
-        this.auth.logOut();
-        location.reload();
+        // Force reload if version mismatch
+        if (this.appVersion !== config.version) {
+          this.toast.info('A new version is available. Reloading application...', 'Update Available');
+          setTimeout(() => {
+            this.auth.logOut();
+            location.reload();
+          }, 2000);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load config:', err);
       }
     });
   }
@@ -139,17 +180,20 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.service.getUserInfo().subscribe((response) => {
-      this.userInfo = <UserInfo>response.data;
+    this.service.getUserInfo().subscribe({
+      next: (response) => {
+        if (response.data) {
+          this.userInfo = response.data as UserInfo;
 
-      this.canSeeTransactions =
-        this.userInfo.permissionList?.includes(
-          PermissionList.CAN_VIEW_TRANSACTIONS
-        ) || false;
-      this.canSeeInvoices =
-        this.userInfo.permissionList?.includes(
-          PermissionList.CAN_VIEW_INVOICES
-        ) || false;
+          this.canSeeTransactions = 
+            this.userInfo.permissionList?.includes(PermissionList.CAN_VIEW_TRANSACTIONS) || false;
+          this.canSeeInvoices = 
+            this.userInfo.permissionList?.includes(PermissionList.CAN_VIEW_INVOICES) || false;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load user info:', err);
+      }
     });
   }
 

@@ -1,11 +1,280 @@
-.form-signin {
-  padding-top: 50px;
-  margin: 0 auto;
-  width: 20%;
+// Variables
+$primary-color: #5711a4; // Purple
+$secondary-color: #f7941d; // Orange
+$text-color: #333;
+$text-light: #666;
+$white: #fff;
+$error-color: #ef4444;
+$transition-default: all 0.3s ease;
+
+// Login Container
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-image: url('/assets/images/truck.jpg'); // Replace with your background image
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 20px;
+  position: relative;
 }
 
-.btn-primary {
-  background: #ffcb0b;
-  color: black;
-  border: none;
+// Overlay with gradient
+.login-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba($primary-color, 0.8), rgba($secondary-color, 0.7));
+  z-index: 1;
+}
+
+// Login Card
+.login-card {
+  display: flex;
+  background: rgba($white, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  width: 90%;
+  max-width: 1000px;
+  z-index: 2;
+  position: relative;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+// Login Form Container
+.login-form-container {
+  padding: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+// Login Form Header
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  .login-logo {
+    width: 130px;
+    margin-bottom: 20px;
+  }
+  
+  .login-title {
+    font-size: 24px;
+    color: $primary-color;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  
+  .login-subtitle {
+    font-size: 14px;
+    color: $text-light;
+    margin-bottom: 0;
+  }
+}
+
+// Login Form
+.login-form {
+  flex: 1;
+  
+  .form-group {
+    margin-bottom: 24px;
+  }
+  
+  .input-wrapper {
+    position: relative;
+    
+    .prefix-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 16px;
+    }
+    
+    .form-control {
+      padding: 12px 16px 12px 45px;
+      border-radius: 8px;
+      border: 1px solid #e8e8e8;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: $transition-default;
+      font-size: 16px;
+      height: auto;
+      width: 100%;
+      
+      &:hover, &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 4px 8px rgba($primary-color, 0.1);
+        outline: none;
+      }
+      
+      &.is-invalid {
+        border-color: $error-color;
+      }
+      
+      &::placeholder {
+        color: #aaa;
+      }
+    }
+  }
+  
+  .error-message {
+    color: $error-color;
+    font-size: 12px;
+    margin-top: 5px;
+    
+    small {
+      display: block;
+    }
+  }
+}
+
+// Captcha Container
+.captcha-container {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// Form Button Container
+.form-button-container {
+  margin-top: 8px;
+  
+  .login-form-button {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    background-image: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 15%) 100%);
+    border: none;
+    color: $white;
+    transition: $transition-default;
+    cursor: pointer;
+    
+    &:hover:not(:disabled) {
+      background-image: linear-gradient(135deg, darken($primary-color, 5%) 0%, lighten($primary-color, 10%) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+    }
+    
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .spinner {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+// Login Footer
+.login-footer {
+  margin-top: 30px;
+  text-align: center;
+  color: $text-light;
+  font-size: 14px;
+  
+  .signup-link {
+    color: $primary-color;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: lighten($primary-color, 10%);
+      text-decoration: underline;
+    }
+  }
+  
+  .copyright {
+    font-size: 12px;
+    margin-top: 10px;
+    color: #888;
+  }
+}
+
+// Image Container
+.login-image-container {
+  flex: 1;
+  background-image: url('/assets/images/truck.jpg'); // Replace with your background image
+  background-size: cover;
+  background-position: center;
+  min-height: 450px;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba($primary-color, 0.7), rgba($secondary-color, 0.6));
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Responsive Styles
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
+    width: 100%;
+    max-width: 450px;
+  }
+  
+  .login-form-container {
+    padding: 30px 20px;
+  }
+  
+  .login-header {
+    .login-logo {
+      width: 100px;
+    }
+    
+    .login-title {
+      font-size: 20px;
+    }
+  }
+  
+  .login-image-container {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-container {
+    padding: 20px 15px;
+  }
+  
+  .login-header {
+    .login-logo {
+      width: 80px;
+    }
+  }
+  
+  .login-form {
+    .form-group {
+      margin-bottom: 16px;
+    }
+  }
 }

@@ -29,6 +29,7 @@
     "file-saver": "^2.0.5",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
+    "ng": "^0.0.0",
     "ngx-bootstrap": "^11.0.2",
     "ngx-captcha": "^13.0.0",
     "ngx-mask": "^17.0.4",
