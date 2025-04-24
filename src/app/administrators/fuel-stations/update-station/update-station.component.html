@@ -1,82 +1,170 @@
-<div class="modal-body" [formGroup]="updateForm">
-  <div class="mb-3">
-    <label class="form-label required">ID</label>
-    <input class="form-control" formControlName="identifier" />
+<div class="modal-body station-form-container" [formGroup]="updateForm">
+  <div class="form-row">
+    <div class="form-group mb-3">
+      <label class="form-label required">Station ID</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-hash"></i></span>
+        <input 
+          type="text" 
+          class="form-control" 
+          formControlName="identifier"
+          placeholder="Enter station ID"
+          [class.is-invalid]="updateForm.get('identifier')?.invalid && updateForm.get('identifier')?.touched"
+        />
+      </div>
+      <div class="invalid-feedback" *ngIf="updateForm.get('identifier')?.errors?.required && updateForm.get('identifier')?.touched">
+        Station ID is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label class="form-label required">Order Number</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-sort-numeric-down"></i></span>
+        <input 
+          type="text" 
+          class="form-control" 
+          formControlName="number"
+          placeholder="Enter order number"
+          [class.is-invalid]="updateForm.get('number')?.invalid && updateForm.get('number')?.touched"
+        />
+      </div>
+      <div class="invalid-feedback" *ngIf="updateForm.get('number')?.errors?.required && updateForm.get('number')?.touched">
+        Order number is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label class="form-label">Station Name</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-building"></i></span>
+        <input
+          type="text"
+          class="form-control"
+          [value]="selectedStation.customerName + ' ' + updateForm.value.number"
+          [readOnly]="true"
+          [disabled]="true"
+        />
+      </div>
+      <small class="form-text text-muted">
+        Name is automatically generated from customer name and order number.
+      </small>
+    </div>
   </div>
 
-  <div class="mb-3">
-    <label class="form-label required">Order</label>
-    <input class="form-control" formControlName="number" />
-  </div>
+  <div class="form-row location-section">
+    <h5 class="section-title">Location Information</h5>
+    
+    <div class="form-group mb-3">
+      <label class="form-label required">State</label>
+      <ng-select
+        [items]="states"
+        bindLabel="name"
+        bindValue="id"
+        formControlName="stateId"
+        placeholder="Select state"
+        (change)="loadCities()"
+        [class.is-invalid]="updateForm.get('stateId')?.invalid && updateForm.get('stateId')?.touched"
+      >
+        <ng-template ng-label-tmp let-item="item">
+          <span class="state-label">{{ item.name }}</span>
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+          {{ item.name }}
+        </ng-template>
+      </ng-select>
+      <div class="invalid-feedback" *ngIf="updateForm.get('stateId')?.errors?.required && updateForm.get('stateId')?.touched">
+        State is required.
+      </div>
+    </div>
 
-  <div class="mb-3">
-    <label class="form-label">Name</label>
-    <input
-      class="form-control"
-      [value]="selectedStation.customerName + ' ' + updateForm.value.number"
-      [readOnly]="true"
-      [disabled]="true"
-    />
-  </div>
+    <div class="form-group mb-3">
+      <label class="form-label required">City</label>
+      <ng-select
+        [items]="cities"
+        bindLabel="name"
+        bindValue="id"
+        formControlName="cityId"
+        placeholder="Select city"
+        [class.is-invalid]="updateForm.get('cityId')?.invalid && updateForm.get('cityId')?.touched"
+        [disabled]="!updateForm.get('stateId')?.value"
+      >
+      </ng-select>
+      <div class="invalid-feedback" *ngIf="updateForm.get('cityId')?.errors?.required && updateForm.get('cityId')?.touched">
+        City is required.
+      </div>
+    </div>
 
-  <div class="mb-3">
-    <label class="form-label required">State</label>
-    <ng-select
-      [items]="states"
-      bindLabel="name"
-      bindValue="id"
-      formControlName="stateId"
-      placeholder="Select state"
-      (change)="loadCities()"
-    >
-    </ng-select>
-  </div>
+    <div class="form-group mb-3">
+      <label class="form-label required">Address</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+        <textarea 
+          class="form-control" 
+          formControlName="address"
+          placeholder="Enter full address"
+          rows="2"
+          [class.is-invalid]="updateForm.get('address')?.invalid && updateForm.get('address')?.touched"
+        ></textarea>
+      </div>
+      <div class="invalid-feedback" *ngIf="updateForm.get('address')?.errors?.required && updateForm.get('address')?.touched">
+        Address is required.
+      </div>
+    </div>
 
-  <div class="mb-3">
-    <label class="form-label required">City</label>
-    <ng-select
-      [items]="cities"
-      bindLabel="name"
-      bindValue="id"
-      formControlName="cityId"
-      placeholder="Select city"
-    >
-    </ng-select>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label required">Address</label>
-    <textarea class="form-control" formControlName="address"></textarea>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label required">Location</label>
-    <div class="input-group">
-      <input
-        type="number"
-        class="form-control"
-        formControlName="lat"
-        placeholder="Enter Lat"
-      />
-      <input
-        type="number"
-        class="form-control"
-        formControlName="lng"
-        placeholder="Enter Lng"
-      />
+    <div class="form-group mb-3">
+      <label class="form-label required">GPS Coordinates</label>
+      <div class="row">
+        <div class="col">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-compass"></i></span>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="lat"
+              placeholder="Latitude"
+              step="0.000001"
+              [class.is-invalid]="updateForm.get('lat')?.invalid && updateForm.get('lat')?.touched"
+            />
+          </div>
+          <div class="invalid-feedback" *ngIf="updateForm.get('lat')?.errors?.required && updateForm.get('lat')?.touched">
+            Latitude is required.
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-compass"></i></span>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="lng"
+              placeholder="Longitude"
+              step="0.000001"
+              [class.is-invalid]="updateForm.get('lng')?.invalid && updateForm.get('lng')?.touched"
+            />
+          </div>
+          <div class="invalid-feedback" *ngIf="updateForm.get('lng')?.errors?.required && updateForm.get('lng')?.touched">
+            Longitude is required.
+          </div>
+        </div>
+      </div>
+      <small class="form-text text-muted">
+        Enter decimal coordinates (e.g., 37.7749, -122.4194)
+      </small>
     </div>
   </div>
 </div>
+
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="onClose()">
-    Close
+  <button type="button" class="btn btn-outline-secondary" (click)="onClose()">
+    <i class="bi bi-x-lg"></i> Cancel
   </button>
   <button
     type="submit"
-    class="btn btn-success"
+    class="btn btn-primary"
     (click)="onSubmit()"
     [disabled]="updateForm.invalid"
   >
-    Save
+    <i class="bi bi-check-lg"></i> Save Changes
   </button>
 </div>

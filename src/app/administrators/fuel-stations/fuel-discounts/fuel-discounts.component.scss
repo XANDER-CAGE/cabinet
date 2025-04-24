@@ -1,0 +1,155 @@
+// Variables
+$primary-color: #5711a4; // Purple
+$secondary-color: #f7941d; // Orange
+$background-light: #f8f9fa;
+$text-color: #333;
+$text-light: #666;
+$white: #fff;
+$border-light: #e2e8f0;
+$success-color: #10b981;
+$error-color: #ef4444;
+$warning-color: #f59e0b;
+$transition-default: all 0.3s ease;
+$retail-color: rgba($text-light, 0.7);
+$applied-color: rgba($success-color, 0.7);
+$discounted-color: rgba($secondary-color, 0.7);
+$discount-color: rgba($primary-color, 0.7);
+
+.fuel-discounts-container {
+  .table-container {
+    background: $white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    
+    table {
+      margin-bottom: 0;
+      
+      thead.table-dark {
+        background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+        
+        th {
+          color: $white;
+          font-weight: 600;
+          padding: 1rem 1.5rem;
+          border-bottom: none;
+          white-space: nowrap;
+          
+          &.timestamp-column {
+            min-width: 180px;
+          }
+          
+          &.price-column {
+            min-width: 120px;
+            text-align: center;
+          }
+        }
+      }
+      
+      tbody {
+        tr {
+          transition: $transition-default;
+          
+          &:hover {
+            background-color: rgba($primary-color, 0.03);
+          }
+          
+          td, th {
+            padding: 0.75rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid $border-light;
+          }
+        }
+      }
+      
+      .timestamp-cell {
+        .time-label {
+          display: inline-flex;
+          align-items: center;
+          color: $text-light;
+          font-size: 0.9rem;
+          font-weight: normal;
+          
+          i {
+            opacity: 0.7;
+            margin-right: 0.3rem;
+          }
+        }
+      }
+      
+      .price-cell {
+        text-align: center;
+        
+        .price-badge {
+          display: inline-block;
+          padding: 0.5em 0.75em;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.9rem;
+          min-width: 90px;
+          text-align: center;
+          
+          &.applied {
+            background-color: rgba($success-color, 0.1);
+            color: $applied-color;
+          }
+          
+          &.retail {
+            background-color: rgba($text-light, 0.1);
+            color: $retail-color;
+          }
+          
+          &.discounted {
+            background-color: rgba($secondary-color, 0.1);
+            color: $discounted-color;
+          }
+          
+          &.discount {
+            background-color: rgba($primary-color, 0.1);
+            color: $discount-color;
+          }
+        }
+      }
+      
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        color: $text-light;
+        
+        i {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+          opacity: 0.5;
+        }
+        
+        p {
+          font-size: 1rem;
+          margin: 0;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .fuel-discounts-container {
+    .table-container {
+      overflow-x: auto;
+      
+      table {
+        min-width: 650px;
+        
+        .price-cell {
+          .price-badge {
+            min-width: 80px;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+}

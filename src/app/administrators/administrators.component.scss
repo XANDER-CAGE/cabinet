@@ -1,0 +1,451 @@
+// Admin Component Variables
+$primary-color: #5711a4; // Purple
+$secondary-color: #f7941d; // Orange
+$background-light: #f8f9fa;
+$background-dark: #1e293b;
+$text-color: #333;
+$text-light: #666;
+$white: #fff;
+$border-light: #e2e8f0;
+$success-color: #10b981;
+$error-color: #ef4444;
+$warning-color: #f59e0b;
+$card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+$transition-default: all 0.3s ease;
+
+// Global Admin Panel Styles
+:host {
+  display: block;
+  
+  .page-header {
+    padding: 1.5rem 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba($primary-color, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $primary-color;
+      margin: 0;
+      letter-spacing: -0.025em;
+    }
+  }
+  
+  .card {
+    background: $white;
+    border-radius: 12px;
+    box-shadow: $card-shadow;
+    border: none;
+    overflow: hidden;
+    transition: $transition-default;
+    margin-bottom: 1.5rem;
+    
+    &:hover {
+      transform: translateY(-3px);
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+      padding: 1rem 1.5rem;
+      border-bottom: none;
+      
+      h5 {
+        color: $white;
+        font-weight: 600;
+        margin: 0;
+      }
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+  
+  // Custom Button Styles
+  .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: $transition-default;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    i, .bi {
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+    }
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 15%) 100%);
+    border: none;
+    color: $white;
+    
+    &:hover, &:focus {
+      background: linear-gradient(135deg, darken($primary-color, 5%) 0%, lighten($primary-color, 10%) 100%);
+    }
+  }
+  
+  .btn-success {
+    background: linear-gradient(135deg, $success-color 0%, darken($success-color, 10%) 100%);
+    border: none;
+    color: $white;
+  }
+  
+  .btn-warning {
+    background: linear-gradient(135deg, $secondary-color 0%, darken($secondary-color, 10%) 100%);
+    border: none;
+    color: $white;
+  }
+  
+  .btn-danger {
+    background: linear-gradient(135deg, $error-color 0%, darken($error-color, 10%) 100%);
+    border: none;
+    color: $white;
+  }
+  
+  // Custom Table Styles
+  .table-container {
+    background: $white;
+    border-radius: 12px;
+    box-shadow: $card-shadow;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  
+  .table {
+    margin-bottom: 0;
+    
+    thead.table-dark {
+      background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+      
+      th {
+        color: $white;
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+        border-bottom: none;
+      }
+    }
+    
+    tbody {
+      tr {
+        transition: $transition-default;
+        
+        &:hover {
+          background-color: rgba($primary-color, 0.05);
+        }
+        
+        td, th {
+          padding: 1rem 1.5rem;
+          vertical-align: middle;
+          border-bottom: 1px solid $border-light;
+        }
+        
+        th {
+          font-weight: 600;
+        }
+      }
+    }
+    
+    tfoot {
+      tr {
+        th, td {
+          padding: 1rem 1.5rem;
+          background-color: $background-light;
+        }
+      }
+    }
+  }
+  
+  // Status Badges
+  .badge {
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    
+    &.bg-success {
+      background-color: $success-color !important;
+    }
+    
+    &.bg-warning {
+      background-color: $warning-color !important;
+    }
+    
+    &.bg-danger {
+      background-color: $error-color !important;
+    }
+  }
+  
+  // Search & Filter Styles
+  .search-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    .input-group {
+      max-width: 400px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      
+      .form-control {
+        border: 1px solid $border-light;
+        padding: 0.75rem 1rem;
+        border-right: none;
+        
+        &:focus {
+          box-shadow: none;
+          border-color: $primary-color;
+        }
+      }
+      
+      .btn {
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1.25rem;
+      }
+    }
+  }
+  
+  // Tab Navigation
+  .nav-tabs {
+    border-bottom: 1px solid $border-light;
+    margin-bottom: 1.5rem;
+    
+    .nav-link {
+      color: $text-light;
+      font-weight: 500;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      transition: $transition-default;
+      
+      &:hover {
+        color: $primary-color;
+        border-bottom-color: rgba($primary-color, 0.3);
+      }
+      
+      &.active {
+        color: $primary-color;
+        font-weight: 600;
+        border-bottom-color: $primary-color;
+      }
+    }
+  }
+  
+  // Pagination
+  ngb-pagination {
+    .page-item {
+      margin: 0 0.25rem;
+      
+      .page-link {
+        border: none;
+        border-radius: 8px;
+        color: $text-color;
+        transition: $transition-default;
+        
+        &:hover {
+          background-color: rgba($primary-color, 0.1);
+          color: $primary-color;
+        }
+      }
+      
+      &.active .page-link {
+        background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 15%) 100%);
+        color: $white;
+        box-shadow: 0 2px 6px rgba($primary-color, 0.3);
+      }
+    }
+  }
+  
+  // Form Controls
+  .form-label {
+    font-weight: 500;
+    color: $text-color;
+    margin-bottom: 0.5rem;
+    
+    &.required::after {
+      content: " *";
+      color: $error-color;
+    }
+  }
+  
+  .form-control, .form-select {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid $border-light;
+    transition: $transition-default;
+    
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+    }
+    
+    &.is-invalid {
+      border-color: $error-color;
+    }
+  }
+  
+  textarea.form-control {
+    min-height: 100px;
+  }
+  
+  // Dropdown Styles
+  ngb-dropdown {
+    .dropdown-menu {
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 0.5rem;
+      
+      .dropdown-item {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: $transition-default;
+        
+        &:hover {
+          background-color: rgba($primary-color, 0.1);
+          color: $primary-color;
+        }
+        
+        &:active {
+          background-color: rgba($primary-color, 0.2);
+        }
+        
+        &:disabled {
+          color: $text-light;
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+  
+  // Loading Spinner
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    
+    .spinner-border {
+      color: $primary-color;
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+  
+  // Modal Customization
+  ::ng-deep {
+    .modal-content {
+      border: none;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+      background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+      border-bottom: none;
+      
+      .modal-title {
+        color: $white;
+        font-weight: 600;
+      }
+      
+      .btn-close {
+        color: $white;
+        filter: invert(1) brightness(200%);
+      }
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .modal-footer {
+      border-top: 1px solid $border-light;
+      padding: 1.25rem 1.5rem;
+    }
+  }
+  
+  // Custom Select Styles
+  ::ng-deep {
+    .ng-select .ng-select-container {
+      border-radius: 8px;
+      min-height: 46px;
+      
+      .ng-value-container {
+        padding-left: 1rem;
+        
+        .ng-placeholder {
+          color: $text-light;
+        }
+      }
+      
+      .ng-arrow-wrapper {
+        padding-right: 1rem;
+      }
+    }
+    
+    .ng-select.ng-select-focused .ng-select-container {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+    }
+    
+    .ng-dropdown-panel {
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      
+      .ng-dropdown-panel-items {
+        .ng-option {
+          padding: 0.75rem 1rem;
+          
+          &.ng-option-selected, &.ng-option-marked {
+            background-color: rgba($primary-color, 0.1);
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+  
+  // Date Picker Customization
+  ::ng-deep {
+    .bs-datepicker-container {
+      border-radius: 12px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+      padding: 0.5rem;
+      
+      .bs-datepicker-head {
+        background-color: $primary-color !important;
+      }
+      
+      .bs-datepicker-body {
+        .week {
+          span.selected {
+            background-color: $primary-color !important;
+          }
+          
+          span:hover {
+            background-color: rgba($primary-color, 0.1) !important;
+          }
+        }
+      }
+    }
+  }
+}

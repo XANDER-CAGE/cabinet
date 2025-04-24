@@ -1,54 +1,56 @@
-<div
-  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
->
-  <h4>Manage Drivers</h4>
-  <form
-    class="input-group w-50 me-3"
-    [formGroup]="filterForm"
-    (ngSubmit)="loadList()"
-  >
-    <input
-      bsDaterangepicker
-      #datePicker
-      [bsConfig]="{ adaptivePosition: true, showPreviousMonth: true }"
-      formControlName="dateRange"
-      placeholder="Date range"
-      class="form-control"
-    />
-    <input
-      type="search"
-      class="form-control"
-      formControlName="searchTerm"
-      placeholder="Query term"
-    />
-    <span
-      class="input-group-text"
-      style="cursor: pointer"
-      (click)="filterForm.reset(); loadList()"
-    >
-      <i class="bi bi-arrow-counterclockwise"></i>
-      Reset
-    </span>
-    <button class="btn btn-success btn-sm" type="submit">
-      <i class="bi bi-search"></i>
-      Search
-    </button>
-  </form>
-</div>
-
-<div class="text-center" *ngIf="preLoading">
-  <div
-    class="spinner-border"
-    style="width: 3rem; height: 3rem; margin: 0 auto"
-    role="status"
-  >
-    <span class="visually-hidden">Loading...</span>
+<div class="admin-container">
+  <div class="page-header">
+    <h4>Manage Drivers</h4>
+    
+    <form class="search-form" [formGroup]="filterForm" (ngSubmit)="loadList()">
+      <div class="filter-container">
+        <div class="date-filter">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-calendar-range"></i></span>
+            <input
+              bsDaterangepicker
+              #datePicker
+              [bsConfig]="{ adaptivePosition: true, showPreviousMonth: true }"
+              formControlName="dateRange"
+              placeholder="Select date range"
+              class="form-control"
+            />
+          </div>
+        </div>
+        
+        <div class="search-filter">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              type="search"
+              class="form-control"
+              formControlName="searchTerm"
+              placeholder="Search drivers..."
+            />
+            <button class="btn btn-reset" type="button" (click)="filterForm.reset(); loadList()">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              <span>Reset</span>
+            </button>
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i>
+              <span>Search</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
-</div>
 
-<ng-container *ngIf="!preLoading">
-  <div class="row mb-3">
-    <div class="col">
+  <!-- Loading Spinner -->
+  <div class="spinner-container" *ngIf="preLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="admin-content" *ngIf="!preLoading">
+    <div class="actions-container mb-4">
       <div ngbDropdown class="d-inline-block">
         <button
           type="button"
@@ -56,163 +58,180 @@
           [disabled]="downloadingFile"
           ngbDropdownToggle
         >
-          Activity reports
+          <i class="bi bi-file-earmark-text me-2"></i>
+          Activity Reports
         </button>
         <div ngbDropdownMenu>
           <button ngbDropdownItem (click)="downloadActivity(false)">
-            Summary report
+            <i class="bi bi-file-earmark-bar-graph me-2"></i>
+            Summary Report
           </button>
           <button ngbDropdownItem (click)="downloadActivity(true)">
-            Device sessions
+            <i class="bi bi-phone me-2"></i>
+            Device Sessions
           </button>
         </div>
       </div>
     </div>
-    <div class="col-auto"></div>
-  </div>
-  <table class="table">
-    <thead class="table-dark">
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">E-mail</th>
-        <th scope="col">Company</th>
-        <th scope="col">App Permissions</th>
-        <th scope="col">Fuel Stations</th>
-        <th scope="col">Registered</th>
-        <th scope="col">Confirmed</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        *ngFor="let item of items"
-        [class.table-secondary]="item.roleCode == roleCode.Company"
-      >
-        <th scope="row">
-          {{ item.fullName }}
-        </th>
-        <td>
-          {{ item.email }}
-        </td>
-        <td>
-          {{ item.companyName }}
-        </td>
-        <td>
-          <ng-container  *ngIf="item.permissionList.length">
-            <span *ngIf="canSeePermission(item, permissionList.CAN_VIEW_INVOICES)">Invoices, </span>
-            <span *ngIf="canSeePermission(item, permissionList.CAN_VIEW_TRANSACTIONS)">Transactions, </span>
-            <span *ngIf="canSeePermission(item, permissionList.SHOW_DISCOUNT_PRICES)">Discount prices, </span>
-            <span *ngIf="canSeePermission(item, permissionList.SHOW_DISCOUNTED_PRICES)">Discounted prices</span>
-          </ng-container>
-          <strong class="text-danger" *ngIf="!item.permissionList.length"
-            >(None)</strong
-          >
-        </td>
-        <td>
-          <strong class="text-success" *ngIf="!item.includeStations.length"
-            >All</strong
-          >
-          <span *ngIf="item.includeStations.length">
-            <ng-container *ngFor="let station of item.includeStations"
-              >{{ getCustomerName(station) }},
-            </ng-container>
-          </span>
-        </td>
-        <td>
-          {{ item.registerTime | appDateTime }}
-        </td>
-        <td>
-          <span *ngIf="item.confirmed" class="badge bg-success"> Yes </span>
-          <span *ngIf="!item.confirmed" class="badge bg-warning text-dark">
-            No
-          </span>
-        </td>
-        <td>
-          <div ngbDropdown class="d-flex justify-content-end" container="body">
-            <button
-              type="button"
-              class="btn btn-outline-primary bi-three-dots"
-              ngbDropdownToggle
-            ></button>
-            <div ngbDropdownMenu>
-              <button
-                ngbDropdownItem
-                (click)="onConfirm(item)"
-                *ngIf="!item.confirmed"
-              >
-                Confirm
-              </button>
-              <button
-                ngbDropdownItem
-                (click)="onChangePassword(item, passwordContent)"
-                *ngIf="item.confirmed"
-              >
-                Set password
-              </button>
-              <button
-                ngbDropdownItem
-                (click)="onEditSettings(item, applyContent)"
-                *ngIf="item.confirmed"
-              >
-                App Settings
-              </button>
-              <button
-                ngbDropdownItem
-                (click)="onMoveCompany(item)"
-                *ngIf="item.confirmed && item.roleCode == roleCode.Driver"
-              >
-                Move Company
-              </button>
-              <button
-                ngbDropdownItem
-                (click)="onRevertDriver(item)"
-                *ngIf="item.confirmed && item.roleCode == roleCode.Company"
-              >
-                Revert Driver
-              </button>
-              <button ngbDropdownItem (click)="onDelete(item)">Delete</button>
-            </div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <th scope="row">
-          <p class="h4 text-secondary">Total: {{ totalRecords }}</p>
-        </th>
-        <td colspan="7">
-          <ngb-pagination
-            class="d-flex justify-content-center"
-            [collectionSize]="totalRecords"
-            [(page)]="pageNumber"
-            [maxSize]="5"
-            [pageSize]="25"
-            [boundaryLinks]="true"
-            (pageChange)="onChangePage($event)"
-          >
-          </ngb-pagination>
-        </td>
-      </tr>
-    </tfoot>
-  </table>
-</ng-container>
 
-<ng-template #applyContent let-modal>
-  <form [formGroup]="settingsForm" (ngSubmit)="onApplySettings(modal)">
-    <div class="modal-header">
-      <h4 class="modal-title">App Settings</h4>
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Close"
-        (click)="modal.dismiss('')"
-      ></button>
+    <div class="table-container">
+      <table class="table">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Company</th>
+            <th scope="col">App Permissions</th>
+            <th scope="col">Fuel Stations</th>
+            <th scope="col">Registered</th>
+            <th scope="col">Status</th>
+            <th scope="col" class="action-column"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items" [class.company-row]="item.roleCode == roleCode.Company">
+            <th scope="row" class="name-cell">
+              {{ item.fullName }}
+            </th>
+            <td class="email-cell">
+              <span class="email-text">{{ item.email }}</span>
+            </td>
+            <td class="company-cell">
+              <span class="company-name">{{ item.companyName }}</span>
+            </td>
+            <td class="permissions-cell">
+              <div class="permission-badges" *ngIf="item.permissionList.length">
+                <span class="permission-badge" *ngIf="canSeePermission(item, permissionList.CAN_VIEW_INVOICES)">Invoices</span>
+                <span class="permission-badge" *ngIf="canSeePermission(item, permissionList.CAN_VIEW_TRANSACTIONS)">Transactions</span>
+                <span class="permission-badge" *ngIf="canSeePermission(item, permissionList.SHOW_DISCOUNT_PRICES)">Discount prices</span>
+                <span class="permission-badge" *ngIf="canSeePermission(item, permissionList.SHOW_DISCOUNTED_PRICES)">Discounted prices</span>
+              </div>
+              <span class="no-permissions" *ngIf="!item.permissionList.length">No permissions</span>
+            </td>
+            <td class="stations-cell">
+              <span class="all-stations" *ngIf="!item.includeStations.length">All stations</span>
+              <div class="station-list" *ngIf="item.includeStations.length">
+                <ng-container *ngFor="let station of item.includeStations; let last = last">
+                  <span class="station-name">{{ getCustomerName(station) }}</span>
+                  <span *ngIf="!last">, </span>
+                </ng-container>
+              </div>
+            </td>
+            <td class="timestamp-cell">
+              <span class="time-label">
+                <i class="bi bi-clock me-1"></i>
+                {{ item.registerTime | appDateTime }}
+              </span>
+            </td>
+            <td class="status-cell">
+              <span *ngIf="item.confirmed" class="badge bg-success">
+                <i class="bi bi-check-circle me-1"></i> Confirmed
+              </span>
+              <span *ngIf="!item.confirmed" class="badge bg-warning">
+                <i class="bi bi-exclamation-circle me-1"></i> Pending
+              </span>
+            </td>
+            <td>
+              <div ngbDropdown container="body" class="action-dropdown">
+                <button
+                  type="button"
+                  class="btn btn-icon"
+                  ngbDropdownToggle
+                >
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <div ngbDropdownMenu class="dropdown-menu-end">
+                  <button
+                    ngbDropdownItem
+                    (click)="onConfirm(item)"
+                    *ngIf="!item.confirmed"
+                  >
+                    <i class="bi bi-check-circle me-2"></i> Confirm
+                  </button>
+                  <button
+                    ngbDropdownItem
+                    (click)="onChangePassword(item, passwordContent)"
+                    *ngIf="item.confirmed"
+                  >
+                    <i class="bi bi-key me-2"></i> Set Password
+                  </button>
+                  <button
+                    ngbDropdownItem
+                    (click)="onEditSettings(item, applyContent)"
+                    *ngIf="item.confirmed"
+                  >
+                    <i class="bi bi-gear me-2"></i> App Settings
+                  </button>
+                  <div class="dropdown-divider" *ngIf="item.confirmed"></div>
+                  <button
+                    ngbDropdownItem
+                    (click)="onMoveCompany(item)"
+                    *ngIf="item.confirmed && item.roleCode == roleCode.Driver"
+                  >
+                    <i class="bi bi-building me-2"></i> Move to Company
+                  </button>
+                  <button
+                    ngbDropdownItem
+                    (click)="onRevertDriver(item)"
+                    *ngIf="item.confirmed && item.roleCode == roleCode.Company"
+                  >
+                    <i class="bi bi-person me-2"></i> Revert to Driver
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button 
+                    ngbDropdownItem 
+                    class="text-danger"
+                    (click)="onDelete(item)"
+                  >
+                    <i class="bi bi-trash me-2"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="8">
+              <div class="pagination-container">
+                <div class="total-records">
+                  <span class="total-label">Total:</span>
+                  <span class="total-value">{{ totalRecords }}</span>
+                </div>
+                <ngb-pagination
+                  [collectionSize]="totalRecords"
+                  [(page)]="pageNumber"
+                  [maxSize]="5"
+                  [pageSize]="25"
+                  [boundaryLinks]="true"
+                  (pageChange)="onChangePage($event)"
+                >
+                </ngb-pagination>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
-    <div class="modal-body">
-      <fieldset>
-        <legend>Accounting</legend>
-        <div class="mb-3">
+  </div>
+</div>
+
+<!-- App Settings Modal -->
+<ng-template #applyContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">App Settings</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
+  <form [formGroup]="settingsForm" (ngSubmit)="onApplySettings(modal)">
+    <div class="modal-body settings-form">
+      <div class="settings-section">
+        <h5 class="section-title">Accounting</h5>
+        <div class="form-group mb-3">
           <label class="form-label">Organizations</label>
           <ng-select
             [items]="organizations"
@@ -224,7 +243,7 @@
           >
           </ng-select>
         </div>
-        <div class="mb-3">
+        <div class="form-group mb-3">
           <label class="form-label">EFS Accounts</label>
           <ng-select
             [items]="efsAccounts"
@@ -236,7 +255,7 @@
           >
           </ng-select>
         </div>
-        <div class="mb-3">
+        <div class="form-group mb-3">
           <label class="form-label">Companies</label>
           <ng-select
             [items]="companies"
@@ -248,7 +267,7 @@
           >
           </ng-select>
         </div>
-        <div class="mb-3" *ngIf="selectedDriver.roleCode == roleCode.Driver">
+        <div class="form-group mb-3" *ngIf="selectedDriver.roleCode == roleCode.Driver">
           <label class="form-label">Account Cards</label>
           <ng-select
             [items]="driverCards"
@@ -260,148 +279,178 @@
           >
           </ng-select>
         </div>
-      </fieldset>
+      </div>
 
       <ng-container *ngIf="selectedDriver.roleCode == roleCode.Driver">
-        <fieldset class="mb-3">
-          <legend>Dashboard</legend>
-          <div class="form-check">
-            <label class="form-check-label">
+        <div class="settings-section">
+          <h5 class="section-title">Dashboard Permissions</h5>
+          <div class="permission-checks">
+            <div class="form-check permission-check">
               <input
                 class="form-check-input"
                 type="checkbox"
+                id="viewInvoices"
                 formControlName="viewInvoices"
               />
-              Can view invoices?
-            </label>
-          </div>
-          <div class="form-check">
-            <label class="form-check-label">
+              <label class="form-check-label" for="viewInvoices">
+                Can view invoices
+              </label>
+            </div>
+            <div class="form-check permission-check">
               <input
                 class="form-check-input"
                 type="checkbox"
+                id="viewTransactions"
                 formControlName="viewTransactions"
               />
-              Can view transactions?
-            </label>
-          </div>
-          <div class="form-check">
-            <label class="form-check-label">
+              <label class="form-check-label" for="viewTransactions">
+                Can view transactions
+              </label>
+            </div>
+            <div class="form-check permission-check">
               <input
                 class="form-check-input"
                 type="checkbox"
+                id="shownDiscountPrices"
                 formControlName="shownDiscountPrices"
               />
-              Shown Discount prices?
-            </label>
-          </div>
-          <div class="form-check">
-            <label class="form-check-label">
+              <label class="form-check-label" for="shownDiscountPrices">
+                Show discount prices
+              </label>
+            </div>
+            <div class="form-check permission-check">
               <input
                 class="form-check-input"
                 type="checkbox"
+                id="shownDiscountedPrices"
                 formControlName="shownDiscountedPrices"
               />
-              Shown Discounted prices?
-            </label>
+              <label class="form-check-label" for="shownDiscountedPrices">
+                Show discounted prices
+              </label>
+            </div>
           </div>
-        </fieldset>
+        </div>
 
-        <fieldset class="mb-3">
-          <legend>Stations</legend>
-          <ng-select
-            [items]="customers"
-            [multiple]="true"
-            bindLabel="name"
-            bindValue="id"
-            placeholder="Select chains"
-            formControlName="stations"
-          >
-            <ng-template ng-label-tmp let-item="item" let-clear="clear">
-              <span class="ng-value-label"
-                ><img [src]="item.iconUrl" width="20px" height="20px" />
-                {{ item.name }}</span
-              >
-              <span
-                class="ng-value-icon right"
-                (click)="clear(item)"
-                aria-hidden="true"
-                >×</span
-              >
-            </ng-template>
+        <div class="settings-section">
+          <h5 class="section-title">Station Access</h5>
+          <div class="form-group">
+            <ng-select
+              [items]="customers"
+              [multiple]="true"
+              bindLabel="name"
+              bindValue="id"
+              placeholder="Select stations (leave empty for all)"
+              formControlName="stations"
+              class="station-select"
+            >
+              <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                <div class="station-option">
+                  <img [src]="item.iconUrl" class="station-icon" alt="Station icon" />
+                  <span class="station-name">{{ item.name }}</span>
+                  <span class="clear-icon" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+              </ng-template>
 
-            <ng-template ng-option-tmp let-item="item">
-              <img [src]="item.iconUrl" width="20px" height="20px" />
-              {{ item.name }}
-            </ng-template>
-          </ng-select>
-        </fieldset>
+              <ng-template ng-option-tmp let-item="item">
+                <div class="station-option">
+                  <img [src]="item.iconUrl" class="station-icon" alt="Station icon" /> 
+                  <span class="station-name">{{ item.name }}</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
       </ng-container>
     </div>
     <div class="modal-footer">
-      <ng-container *ngIf="!applyingSettings">
+      <div class="footer-buttons" *ngIf="!applyingSettings">
         <button
           type="button"
-          class="btn btn-outline-danger bi bi-arrow-counterclockwise"
+          class="btn btn-outline-danger"
           (click)="onResetSettings(modal)"
         >
-          Reset
+          <i class="bi bi-arrow-counterclockwise me-2"></i>
+          Reset Settings
         </button>
         <button
           type="submit"
-          class="btn btn-outline-success bi bi-save2"
+          class="btn btn-primary"
           [disabled]="settingsForm.invalid"
         >
-          Apply
+          <i class="bi bi-check-lg me-2"></i>
+          Apply Settings
         </button>
-      </ng-container>
-      <span
-        class="spinner-border"
-        style="width: 2rem; height: 2rem; margin: 0 auto"
-        role="status"
-        *ngIf="applyingSettings"
-        aria-hidden="true"
-      ></span>
+      </div>
+      <div class="loading-indicator" *ngIf="applyingSettings">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
     </div>
   </form>
 </ng-template>
 
+<!-- Password Modal -->
 <ng-template #passwordContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Change Password</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
   <form [formGroup]="passwordForm" (ngSubmit)="submitChangePassword(modal)">
-    <div class="modal-header">
-      <h4 class="modal-title">Password</h4>
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Close"
-        (click)="modal.dismiss('')"
-      ></button>
-    </div>
     <div class="modal-body">
-      <div class="mb-4">
+      <div class="form-group mb-3">
         <label class="form-label required">New Password</label>
-        <input
-          type="password"
-          formControlName="newPassword"
-          class="form-control"
-        />
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+          <input
+            type="password"
+            formControlName="newPassword"
+            class="form-control"
+            placeholder="Enter new password"
+            [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
+          />
+        </div>
+        <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.required && passwordForm.get('newPassword')?.touched">
+          New password is required.
+        </div>
+        <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.minlength">
+          Password must be at least 2 characters.
+        </div>
       </div>
-      <div class="mb-4">
+      
+      <div class="form-group mb-3">
         <label class="form-label required">Confirm Password</label>
-        <input
-          type="password"
-          formControlName="confirmPassword"
-          class="form-control"
-        />
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            class="form-control"
+            placeholder="Confirm new password"
+            [class.is-invalid]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched"
+          />
+        </div>
+        <div class="invalid-feedback" *ngIf="passwordForm.errors?.passwordMatch && passwordForm.get('confirmPassword')?.touched">
+          Passwords do not match.
+        </div>
       </div>
     </div>
     <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('')">
+        <i class="bi bi-x-lg me-1"></i> Cancel
+      </button>
       <button
         type="submit"
-        class="btn btn-success"
+        class="btn btn-primary"
         [disabled]="passwordForm.invalid"
       >
-        <i class="bi bi-key"></i> Change
+        <i class="bi bi-key me-1"></i> Change Password
       </button>
     </div>
   </form>

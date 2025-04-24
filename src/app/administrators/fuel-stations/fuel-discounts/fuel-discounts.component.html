@@ -1,30 +1,45 @@
-<table class="table">
-  <thead class="table-dark">
-    <tr>
-      <th scope="col">Time</th>
-      <th scope="col">Apply</th>
-      <th scope="col">Retail</th>
-      <th scope="col">Discounted</th>
-      <th scope="col">Discount</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of discounts">
-      <th scope="row">
-        {{ item.time | appDateTime }}
-      </th>
-      <td>
-        {{ item.apply| currency }}
-      </td>
-      <td>
-        {{ item.retail| currency }}
-      </td>
-      <td>
-        {{ item.best| currency }}
-      </td>
-      <td>
-        {{ item.discount| currency }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div class="fuel-discounts-container">
+  <div class="table-container">
+    <table class="table">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col" class="timestamp-column">Time</th>
+          <th scope="col" class="price-column">Apply</th>
+          <th scope="col" class="price-column">Retail</th>
+          <th scope="col" class="price-column">Discounted</th>
+          <th scope="col" class="price-column">Discount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of discounts">
+          <th scope="row" class="timestamp-cell">
+            <span class="time-label">
+              <i class="bi bi-clock me-1"></i>
+              {{ item.time | appDateTime }}
+            </span>
+          </th>
+          <td class="price-cell">
+            <span class="price-badge applied">{{ item.apply | currency }}</span>
+          </td>
+          <td class="price-cell">
+            <span class="price-badge retail">{{ item.retail | currency }}</span>
+          </td>
+          <td class="price-cell">
+            <span class="price-badge discounted">{{ item.best | currency }}</span>
+          </td>
+          <td class="price-cell">
+            <span class="price-badge discount">{{ item.discount | currency }}</span>
+          </td>
+        </tr>
+        <tr *ngIf="!discounts.length">
+          <td colspan="5" class="text-center py-4">
+            <div class="empty-state">
+              <i class="bi bi-currency-exchange" aria-hidden="true"></i>
+              <p>No discount history available for this station</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

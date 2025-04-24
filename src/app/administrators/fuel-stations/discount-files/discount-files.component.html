@@ -1,31 +1,54 @@
-<table class="table">
-  <thead class="table-dark">
-    <tr>
-      <th scope="col">File</th>
-      <th scope="col">Time</th>
-      <th scope="col">Success</th>
-      <th scope="col">Process</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of files">
-      <th scope="row">
-        <button type="button" (click)="downloadFile(item)" class="btn btn-link" [disabled]="downloadingProcess">
-          {{ item.fileName }}
-        </button>
-      </th>
-      <td>
-        {{ item.uploadTime | appDateTime }}
-      </td>
-      <td>
-        <span *ngIf="item.isImported" class="badge bg-success"> Yes </span>
-        <span *ngIf="!item.isImported" class="badge bg-warning text-dark">
-          No
-        </span>
-      </td>
-      <td>
-        {{ item.executionResult }}
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div class="discount-files-container">
+  <div class="table-container">
+    <table class="table">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">File</th>
+          <th scope="col">Time</th>
+          <th scope="col">Status</th>
+          <th scope="col">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of files">
+          <th scope="row" class="file-name-cell">
+            <button 
+              type="button" 
+              (click)="downloadFile(item)" 
+              class="btn btn-link" 
+              [disabled]="downloadingProcess"
+            >
+              <i class="bi bi-file-earmark-excel me-2"></i>
+              <span>{{ item.fileName }}</span>
+            </button>
+          </th>
+          <td class="timestamp-cell">
+            <span class="time-label">
+              <i class="bi bi-clock me-1"></i>
+              {{ item.uploadTime | appDateTime }}
+            </span>
+          </td>
+          <td class="status-cell">
+            <span *ngIf="item.isImported" class="badge bg-success">
+              <i class="bi bi-check-circle me-1"></i> Success
+            </span>
+            <span *ngIf="!item.isImported" class="badge bg-warning">
+              <i class="bi bi-exclamation-circle me-1"></i> Failed
+            </span>
+          </td>
+          <td class="result-cell">
+            <span class="result-text">{{ item.executionResult }}</span>
+          </td>
+        </tr>
+        <tr *ngIf="!files.length">
+          <td colspan="4" class="text-center py-4">
+            <div class="empty-state">
+              <i class="bi bi-folder-x" aria-hidden="true"></i>
+              <p>No discount files have been uploaded yet</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

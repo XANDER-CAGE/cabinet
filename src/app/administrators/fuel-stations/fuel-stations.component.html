@@ -1,182 +1,209 @@
-<div
-  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
->
-  <h4>Fuel Stations</h4>
-</div>
-
-<div class="text-center" *ngIf="preLoading">
-  <div
-    class="spinner-border"
-    style="width: 3rem; height: 3rem; margin: 0 auto"
-    role="status"
-  >
-    <span class="visually-hidden">Loading...</span>
-  </div>
-</div>
-
-<ng-container *ngIf="!preLoading">
-  <div class="row mb-3">
-    <div class="col">
-      <button
-        class="btn btn-primary text-white ms-3 bi-plus"
-        (click)="showAdd(addContent)"
-      >
-        Add Station
+<div class="admin-container">
+  <div class="page-header">
+    <h4>Fuel Stations</h4>
+    <div class="header-actions" *ngIf="!preLoading">
+      <button class="btn btn-outline-secondary me-2" (click)="showFiles(filesContent)">
+        <i class="bi bi-clock-history"></i> History
       </button>
-      <button
-        class="btn btn-secondary text-white ms-3 bi-upload"
-        (click)="showImport(importContent)"
-      >
-        Import Discounts
+      <button class="btn btn-outline-danger me-2" (click)="onRevertDiscounts()">
+        <i class="bi bi-arrow-counterclockwise"></i> Revert
       </button>
-      <button
-        class="btn btn-success ms-3 bi-graph-down"
-        (click)="showDiscount(appleContent)"
-      >
-        Apply Discount
+      <button class="btn btn-outline-success me-2" (click)="showDiscount(appleContent)">
+        <i class="bi bi-graph-down"></i> Apply
       </button>
-      <button
-        class="btn btn-danger text-white ms-3 bi-backpack"
-        (click)="onRevertDiscounts()"
-      >
-        Revert Discounts
+      <button class="btn btn-outline-primary me-2" (click)="showImport(importContent)">
+        <i class="bi bi-upload"></i> Import
       </button>
-      <button
-        class="btn btn-warning ms-3 bi-clock-history"
-        (click)="showFiles(filesContent)"
-      >
-        Discount Histories
+      <button class="btn btn-primary" (click)="showAdd(addContent)">
+        <i class="bi bi-plus-lg"></i> Add Station
       </button>
     </div>
-    <div class="col-auto">
-      <div class="input-group">
-        <input
-          type="search"
-          class="form-control"
-          [value]="searchTerm"
-          placeholder="Search..."
-          #searchElem
-        />
-        <button
-          class="btn btn-primary bi-search"
-          (click)="onSearch(searchElem.value)"
-        ></button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="spinner-container" *ngIf="preLoading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="admin-content" *ngIf="!preLoading">
+    <div class="content-header">
+      <div class="tab-container">
+        <nav class="customer-tabs">
+          <div class="nav nav-tabs">
+            <a
+              class="nav-link"
+              *ngFor="let item of customers"
+              [class.active]="item.id == customerId"
+              [routerLink]="'/administrators/stations/' + item.id"
+            >
+              {{ item.name }}
+            </a>
+          </div>
+        </nav>
+      </div>
+      
+      <div class="search-container">
+        <div class="input-group">
+          <input
+            type="search"
+            class="form-control"
+            [value]="searchTerm"
+            placeholder="Search stations..."
+            #searchElem
+          />
+          <button
+            class="btn btn-primary"
+            (click)="onSearch(searchElem.value)"
+          >
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <nav class="mb-3">
-    <div class="nav nav-tabs">
-      <a
-        class="nav-link"
-        *ngFor="let item of customers"
-        [class.active]="item.id == customerId"
-        [routerLink]="'/administrators/stations/' + item.id"
-      >
-        {{ item.name }}
-      </a>
-    </div>
-  </nav>
-  <table class="table">
-    <thead class="table-dark">
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Prices</th>
-        <th scope="col">Updated</th>
-        <th scope="col">Opened</th>
-        <th scope="col">Address</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of items" [class.table-danger]="item.isEmpty">
-        <th scope="row">
-          <a
-            [href]="'https://maps.google.com?q=' + item.lat + ',' + item.lng"
-            target="_blank"
-          >
-            {{ item.name }}
-          </a>
-        </th>
-        <td>
-          <span>Discount: {{ item.discountPrice | currency }}, </span>
-          <span>Discounted: {{ item.bestPrice | currency }}, </span>
-          <span>Retail: {{ item.retailPrice | currency }}</span>
-        </td>
-        <td>
-          {{ item.priceUpdated | appDateTime }}
-        </td>
-        <td>
-          <span *ngIf="item.isOpen" class="badge bg-success"> Yes </span>
-          <span *ngIf="!item.isOpen" class="badge bg-warning text-dark">
-            No
-          </span>
-        </td>
-        <td>{{ item.address }}, {{ item.cityName }} , {{ item.cityName }}</td>
-        <td>
-          <div ngbDropdown container="body" class="d-flex justify-content-end">
-            <button
-              type="button"
-              class="btn btn-outline-primary bi-three-dots"
-              ngbDropdownToggle
-            ></button>
-            <div ngbDropdownMenu>
-              <button
-                ngbDropdownItem
-                (click)="onViewDiscounts(item, discountContent)"
-              >
-                Discounts
-              </button>
-              <button ngbDropdownItem (click)="showEdit(item, editContent)">
-                Edit
-              </button>
-              <button ngbDropdownItem [disabled]="true">Delete</button>
-            </div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <th scope="row">
-          <p class="h4 text-secondary">Total: {{ totalRecords }}</p>
-        </th>
-        <td colspan="6">
-          <ngb-pagination
-            class="d-flex justify-content-center"
-            [collectionSize]="totalRecords"
-            [(page)]="pageNumber"
-            [maxSize]="5"
-            [pageSize]="25"
-            [boundaryLinks]="true"
-            (pageChange)="onChangePage($event)"
-          >
-          </ngb-pagination>
-        </td>
-      </tr>
-    </tfoot>
-  </table>
-</ng-container>
 
-<ng-template #importContent let-modal>
-  <form [formGroup]="fileForm" (ngSubmit)="onUploadDiscounts(modal)">
-    <div class="modal-header">
-      <h4 class="modal-title">Import Discounts</h4>
-      <button
-        type="button"
-        class="btn-close"
-        (click)="modal.dismiss('')"
-      ></button>
+    <div class="table-container">
+      <table class="table">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Prices</th>
+            <th scope="col">Updated</th>
+            <th scope="col">Status</th>
+            <th scope="col">Address</th>
+            <th scope="col" class="action-column"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items" [class.table-danger]="item.isEmpty">
+            <th scope="row">
+              <a
+                [href]="'https://maps.google.com?q=' + item.lat + ',' + item.lng"
+                target="_blank"
+                class="station-name"
+              >
+                {{ item.name }}
+              </a>
+            </th>
+            <td>
+              <div class="price-container">
+                <div class="price-item">
+                  <span class="price-label">Discount:</span>
+                  <span class="price-value">{{ item.discountPrice | currency }}</span>
+                </div>
+                <div class="price-item">
+                  <span class="price-label">Discounted:</span>
+                  <span class="price-value">{{ item.bestPrice | currency }}</span>
+                </div>
+                <div class="price-item">
+                  <span class="price-label">Retail:</span>
+                  <span class="price-value">{{ item.retailPrice | currency }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              {{ item.priceUpdated | appDateTime }}
+            </td>
+            <td>
+              <span *ngIf="item.isOpen" class="badge bg-success">Open</span>
+              <span *ngIf="!item.isOpen" class="badge bg-warning">Closed</span>
+            </td>
+            <td>{{ item.address }}, {{ item.cityName }}, {{ item.stateName }}</td>
+            <td>
+              <div ngbDropdown container="body" class="action-dropdown">
+                <button
+                  type="button"
+                  class="btn btn-icon"
+                  ngbDropdownToggle
+                >
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <div ngbDropdownMenu class="dropdown-menu-end">
+                  <button
+                    ngbDropdownItem
+                    (click)="onViewDiscounts(item, discountContent)"
+                  >
+                    <i class="bi bi-tags"></i> Discounts
+                  </button>
+                  <button 
+                    ngbDropdownItem 
+                    (click)="showEdit(item, editContent)"
+                  >
+                    <i class="bi bi-pencil"></i> Edit
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button 
+                    ngbDropdownItem 
+                    [disabled]="true"
+                    class="text-danger"
+                  >
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="6">
+              <div class="pagination-container">
+                <div class="total-records">
+                  <span class="total-label">Total:</span>
+                  <span class="total-value">{{ totalRecords }}</span>
+                </div>
+                <ngb-pagination
+                  [collectionSize]="totalRecords"
+                  [(page)]="pageNumber"
+                  [maxSize]="5"
+                  [pageSize]="25"
+                  [boundaryLinks]="true"
+                  (pageChange)="onChangePage($event)"
+                >
+                </ngb-pagination>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
+  </div>
+</div>
+
+<!-- Import Discounts Modal -->
+<ng-template #importContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Import Discounts</h4>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
+  <form [formGroup]="fileForm" (ngSubmit)="onUploadDiscounts(modal)">
     <div class="modal-body">
-      <div class="input-group">
-        <input
-          class="form-control"
-          readonly
-          type="text"
-          placeholder="Select file"
-          formControlName="fileName"
-          (click)="excelFile.click()"
-        />
+      <p class="text-muted mb-4">Upload Excel file with discount information for stations</p>
+      <div class="file-upload-container">
+        <div class="input-group">
+          <input
+            class="form-control"
+            readonly
+            type="text"
+            placeholder="Select Excel file..."
+            formControlName="fileName"
+            (click)="excelFile.click()"
+          />
+          <button
+            class="btn btn-outline-primary"
+            type="button"
+            (click)="excelFile.click()"
+            ngbTooltip="Only Excel file"
+          >
+            <i class="bi bi-file-earmark-excel"></i>
+          </button>
+        </div>
         <input
           #excelFile
           type="file"
@@ -184,25 +211,25 @@
           (change)="onSelectFile($event)"
           accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         />
-        <button
-          class="btn btn-outline-danger bi bi-filetype-xlsx"
-          type="button"
-          (click)="excelFile.click()"
-          ngbTooltip="Only Excel file"
-        ></button>
+        <small class="form-text text-muted mt-2">
+          Only .xlsx format is supported
+        </small>
       </div>
     </div>
     <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('')">
+        Cancel
+      </button>
       <button
         type="submit"
-        class="btn btn-outline-success bi bi-cloud"
+        class="btn btn-primary"
         [disabled]="fileForm.invalid"
         *ngIf="!importingDiscounts"
       >
-        Upload
+        <i class="bi bi-cloud-upload"></i> Upload
       </button>
       <button
-        class="btn btn-outline-success"
+        class="btn btn-primary"
         type="button"
         disabled
         *ngIf="importingDiscounts"
@@ -212,11 +239,13 @@
           role="status"
           aria-hidden="true"
         ></span>
+        Uploading...
       </button>
     </div>
   </form>
 </ng-template>
 
+<!-- Discount Files Modal -->
 <ng-template #filesContent let-modal>
   <div class="modal-header">
     <h4 class="modal-title">Discount Histories</h4>
@@ -226,16 +255,17 @@
       (click)="modal.dismiss('')"
     ></button>
   </div>
-  <div class="modal-body">
+  <div class="modal-body files-modal-body">
     <app-discount-files [items]="files"></app-discount-files>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="modal.close('')">
+    <button type="button" class="btn btn-primary" (click)="modal.close('')">
       Close
     </button>
   </div>
 </ng-template>
 
+<!-- Station Discounts Modal -->
 <ng-template #discountContent let-modal>
   <div class="modal-header">
     <h4 class="modal-title">Station Discounts</h4>
@@ -249,49 +279,58 @@
     <app-fuel-discounts [items]="discounts"></app-fuel-discounts>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="modal.close('')">
+    <button type="button" class="btn btn-primary" (click)="modal.close('')">
       Close
     </button>
   </div>
 </ng-template>
 
+<!-- Apply Discount Modal -->
 <ng-template #appleContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Apply Discount</h4>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
   <form [formGroup]="discountForm" (ngSubmit)="onApplyDiscount(modal)">
-    <div class="modal-header">
-      <h4 class="modal-title">Apply Discount</h4>
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Close"
-        (click)="modal.dismiss('')"
-      ></button>
-    </div>
     <div class="modal-body">
-      <div class="input-group">
-        <input
-          class="form-control"
-          type="number"
-          placeholder="Enter amount"
-          formControlName="discount"
-        />
-        <button
-          class="btn btn-outline-danger bi bi-currency-dollar"
-          ngbTooltip="This differential price"
-          type="button"
-        ></button>
+      <p class="text-muted mb-4">Enter the discount amount to apply to all stations.</p>
+      <div class="discount-input-container">
+        <label class="form-label">Discount Amount ($)</label>
+        <div class="input-group">
+          <span class="input-group-text">$</span>
+          <input
+            class="form-control"
+            type="number"
+            placeholder="Enter amount"
+            formControlName="discount"
+            min="0"
+            max="10"
+            step="0.01"
+          />
+        </div>
+        <small class="form-text text-muted mt-2">
+          Enter a value between $0.00 and $10.00
+        </small>
       </div>
     </div>
     <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('')">
+        Cancel
+      </button>
       <button
         type="submit"
-        class="btn btn-outline-success bi bi-save2"
+        class="btn btn-success"
         [disabled]="discountForm.invalid"
         *ngIf="!applyingDiscount"
       >
-        Save
+        <i class="bi bi-check-lg"></i> Apply Discount
       </button>
       <button
-        class="btn btn-outline-success"
+        class="btn btn-success"
         type="button"
         disabled
         *ngIf="applyingDiscount"
@@ -301,11 +340,13 @@
           role="status"
           aria-hidden="true"
         ></span>
+        Applying...
       </button>
     </div>
   </form>
 </ng-template>
 
+<!-- Edit Station Modal -->
 <ng-template #editContent let-modal>
   <div class="modal-header">
     <h4 class="modal-title">Edit Station</h4>
@@ -321,6 +362,7 @@
   ></app-update-station>
 </ng-template>
 
+<!-- Add Station Modal -->
 <ng-template #addContent let-modal>
   <div class="modal-header">
     <h4 class="modal-title">Add Station</h4>

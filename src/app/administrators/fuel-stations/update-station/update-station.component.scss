@@ -1,0 +1,246 @@
+// Variables
+$primary-color: #5711a4; // Purple
+$secondary-color: #f7941d; // Orange
+$background-light: #f8f9fa;
+$text-color: #333;
+$text-light: #666;
+$white: #fff;
+$border-light: #e2e8f0;
+$success-color: #10b981;
+$error-color: #ef4444;
+$warning-color: #f59e0b;
+$transition-default: all 0.3s ease;
+
+.station-form-container {
+  padding: 1rem 0.5rem;
+  
+  .form-row {
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
+    color: $primary-color;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba($primary-color, 0.1);
+  }
+  
+  .location-section {
+    margin-top: 1.5rem;
+  }
+  
+  // Form Labels
+  .form-label {
+    font-weight: 500;
+    color: $text-color;
+    margin-bottom: 0.5rem;
+    
+    &.required::after {
+      content: " *";
+      color: $error-color;
+    }
+  }
+  
+  // Form Controls
+  .form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid $border-light;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: $transition-default;
+    
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+    }
+    
+    &:disabled, &[readonly] {
+      background-color: $background-light;
+      opacity: 0.7;
+    }
+    
+    &.is-invalid {
+      border-color: $error-color;
+      
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($error-color, 0.15);
+      }
+    }
+  }
+  
+  textarea.form-control {
+    min-height: 60px;
+    resize: vertical;
+  }
+  
+  // Input Groups
+  .input-group {
+    .input-group-text {
+      background-color: $background-light;
+      border: 1px solid $border-light;
+      color: $text-light;
+      padding: 0 1rem;
+      
+      i {
+        font-size: 1.1rem;
+      }
+    }
+  }
+  
+  // NG-Select Customization
+  ::ng-deep {
+    .ng-select {
+      .ng-select-container {
+        border-radius: 8px;
+        min-height: 48px;
+        border: 1px solid $border-light;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        transition: $transition-default;
+        
+        .ng-value-container {
+          padding-left: 1rem;
+          
+          .ng-placeholder {
+            color: rgba($text-light, 0.7);
+          }
+        }
+        
+        .ng-arrow-wrapper {
+          padding-right: 1rem;
+        }
+      }
+      
+      &.ng-select-focused .ng-select-container {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+      }
+      
+      &.ng-select-disabled .ng-select-container {
+        background-color: $background-light;
+        opacity: 0.7;
+      }
+      
+      &.is-invalid .ng-select-container {
+        border-color: $error-color;
+        
+        &:focus {
+          box-shadow: 0 0 0 3px rgba($error-color, 0.15);
+        }
+      }
+    }
+    
+    .ng-dropdown-panel {
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      
+      .ng-dropdown-panel-items {
+        .ng-option {
+          padding: 0.75rem 1rem;
+          
+          &.ng-option-selected, &.ng-option-marked {
+            background-color: rgba($primary-color, 0.1);
+            color: $primary-color;
+          }
+        }
+      }
+    }
+    
+    .state-label {
+      font-weight: 500;
+    }
+  }
+  
+  // Form Validation Messages
+  .invalid-feedback {
+    display: block;
+    font-size: 0.8rem;
+    color: $error-color;
+    margin-top: 0.25rem;
+  }
+  
+  // Helper Text
+  .form-text {
+    font-size: 0.8rem;
+    color: $text-light;
+    margin-top: 0.25rem;
+  }
+}
+
+// Footer Buttons
+.modal-footer {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    transition: $transition-default;
+    
+    i {
+      margin-right: 0.5rem;
+      font-size: 1rem;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    &.btn-primary {
+      background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 15%) 100%);
+      border: none;
+      
+      &:hover, &:focus {
+        background: linear-gradient(135deg, darken($primary-color, 5%) 0%, lighten($primary-color, 10%) 100%);
+      }
+      
+      &:disabled {
+        background: linear-gradient(135deg, desaturate($primary-color, 40%) 0%, desaturate(lighten($primary-color, 15%), 40%) 100%);
+        opacity: 0.7;
+      }
+    }
+    
+    &.btn-outline-secondary {
+      border: 2px solid $text-light;
+      color: $text-light;
+      
+      &:hover, &:focus {
+        background-color: $text-light;
+        color: $white;
+      }
+    }
+  }
+}
+
+// Responsive Adjustments
+@media (max-width: 576px) {
+  .station-form-container {
+    padding: 0.5rem 0;
+    
+    .row {
+      margin-left: -0.5rem;
+      margin-right: -0.5rem;
+      
+      .col {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+    }
+  }
+  
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    
+    .btn {
+      width: 100%;
+    }
+  }
+}

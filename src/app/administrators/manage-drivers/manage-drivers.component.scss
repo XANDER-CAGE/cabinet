@@ -1,0 +1,679 @@
+// Variables
+$primary-color: #5711a4; // Purple
+$secondary-color: #f7941d; // Orange
+$background-light: #f8f9fa;
+$text-color: #333;
+$text-light: #666;
+$white: #fff;
+$border-light: #e2e8f0;
+$success-color: #10b981;
+$error-color: #ef4444;
+$warning-color: #f59e0b;
+$transition-default: all 0.3s ease;
+
+.admin-container {
+  padding: 1rem;
+  
+  // Page Header
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $border-light;
+    
+    @media (max-width: 991.98px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    h4 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: $primary-color;
+      margin: 0;
+      letter-spacing: -0.025em;
+      
+      @media (max-width: 991.98px) {
+        margin-bottom: 1rem;
+      }
+    }
+    
+    .search-form {
+      width: 60%;
+      max-width: 800px;
+      
+      @media (max-width: 991.98px) {
+        width: 100%;
+      }
+      
+      .filter-container {
+        display: flex;
+        gap: 0.5rem;
+        
+        @media (max-width: 767.98px) {
+          flex-direction: column;
+        }
+        
+        .date-filter {
+          flex: 0 0 auto;
+          width: 220px;
+          
+          @media (max-width: 767.98px) {
+            width: 100%;
+          }
+          
+          .input-group {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            
+            .input-group-text {
+              background-color: $background-light;
+              border: 1px solid $border-light;
+              color: $text-light;
+            }
+            
+            .form-control {
+              border: 1px solid $border-light;
+              transition: $transition-default;
+              
+              &:focus {
+                border-color: $primary-color;
+                box-shadow: none;
+              }
+            }
+          }
+        }
+        
+        .search-filter {
+          flex: 1;
+          
+          .input-group {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            
+            .input-group-text {
+              background-color: $background-light;
+              border: 1px solid $border-light;
+              color: $text-light;
+            }
+            
+            .form-control {
+              border: 1px solid $border-light;
+              transition: $transition-default;
+              
+              &:focus {
+                border-color: $primary-color;
+                box-shadow: none;
+              }
+            }
+            
+            .btn {
+              display: flex;
+              align-items: center;
+              padding: 0.5rem 1rem;
+              font-weight: 500;
+              transition: $transition-default;
+              
+              i {
+                margin-right: 0.25rem;
+                
+                @media (max-width: 575.98px) {
+                  margin-right: 0;
+                }
+              }
+              
+              span {
+                @media (max-width: 575.98px) {
+                  display: none;
+                }
+              }
+              
+              &:hover {
+                transform: translateY(-2px);
+              }
+              
+              &.btn-reset {
+                background-color: $background-light;
+                color: $text-light;
+                border: 1px solid $border-light;
+                
+                &:hover {
+                  background-color: darken($background-light, 5%);
+                }
+              }
+              
+              &.btn-primary {
+                background: linear-gradient(135deg, $primary-color 0%, lighten($primary-color, 15%) 100%);
+                color: $white;
+                border: none;
+                
+                &:hover {
+                  background: linear-gradient(135deg, darken($primary-color, 5%) 0%, lighten($primary-color, 10%) 100%);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Loading Spinner
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    
+    .spinner-border {
+      color: $primary-color;
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+  
+  // Content Container
+  .admin-content {
+    .actions-container {
+      .btn-outline-primary {
+        border: 2px solid $primary-color;
+        color: $primary-color;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: $transition-default;
+        
+        &:hover {
+          background-color: $primary-color;
+          color: $white;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        &:disabled {
+          color: $text-light;
+          border-color: $text-light;
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+    
+    // Table Styles
+    .table-container {
+      background: $white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      
+      .table {
+        margin-bottom: 0;
+        
+        thead.table-dark {
+          background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+          
+          th {
+            color: $white;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border-bottom: none;
+            vertical-align: middle;
+            white-space: nowrap;
+            
+            &.action-column {
+              width: 60px;
+              text-align: center;
+            }
+          }
+        }
+        
+        tbody {
+          tr {
+            transition: $transition-default;
+            
+            &:hover {
+              background-color: rgba($primary-color, 0.02);
+            }
+            
+            &.company-row {
+              background-color: rgba($primary-color, 0.03);
+              
+              &:hover {
+                background-color: rgba($primary-color, 0.06);
+              }
+            }
+            
+            td, th {
+              padding: 1rem 1.5rem;
+              vertical-align: middle;
+              border-bottom: 1px solid $border-light;
+            }
+            
+            .name-cell {
+              font-weight: 600;
+              color: $primary-color;
+            }
+            
+            .email-cell {
+              .email-text {
+                font-family: monospace;
+                color: $text-light;
+                font-size: 0.9rem;
+              }
+            }
+            
+            .company-cell {
+              .company-name {
+                font-weight: 500;
+              }
+            }
+            
+            .permissions-cell {
+              .permission-badges {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.3rem;
+                
+                .permission-badge {
+                  display: inline-block;
+                  font-size: 0.75rem;
+                  padding: 0.25em 0.5em;
+                  border-radius: 4px;
+                  background-color: rgba($primary-color, 0.1);
+                  color: $primary-color;
+                  font-weight: 500;
+                }
+              }
+              
+              .no-permissions {
+                color: $error-color;
+                font-weight: 500;
+                font-size: 0.85rem;
+              }
+            }
+            
+            .stations-cell {
+              .all-stations {
+                color: $success-color;
+                font-weight: 500;
+              }
+              
+              .station-list {
+                font-size: 0.9rem;
+                color: $text-color;
+                max-width: 200px;
+                text-overflow: ellipsis;
+                overflow: hidden;
+              }
+            }
+            
+            .timestamp-cell {
+              white-space: nowrap;
+              
+              .time-label {
+                display: inline-flex;
+                align-items: center;
+                color: $text-light;
+                font-size: 0.85rem;
+                
+                i {
+                  opacity: 0.7;
+                  margin-right: 0.3rem;
+                }
+              }
+            }
+            
+            .status-cell {
+              .badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.5em 0.75em;
+                border-radius: 6px;
+                font-weight: 500;
+                
+                i {
+                  margin-right: 0.25rem;
+                }
+                
+                &.bg-success {
+                  background-color: $success-color !important;
+                }
+                
+                &.bg-warning {
+                  background-color: $warning-color !important;
+                }
+              }
+            }
+            
+            .action-dropdown {
+              .btn-icon {
+                width: 36px;
+                height: 36px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: transparent;
+                border: none;
+                border-radius: 50%;
+                color: $text-light;
+                transition: $transition-default;
+                
+                &:hover {
+                  background-color: rgba($primary-color, 0.1);
+                  color: $primary-color;
+                }
+                
+                &::after {
+                  display: none;
+                }
+                
+                i {
+                  font-size: 1.25rem;
+                }
+              }
+            }
+          }
+        }
+        
+        tfoot {
+          .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            
+            @media (max-width: 767.98px) {
+              flex-direction: column;
+              gap: 1rem;
+            }
+            
+            .total-records {
+              font-size: 0.9rem;
+              color: $text-light;
+              
+              .total-label {
+                font-weight: 500;
+                margin-right: 0.5rem;
+              }
+              
+              .total-value {
+                font-weight: 600;
+                color: $primary-color;
+                background: rgba($primary-color, 0.1);
+                padding: 0.35em 0.65em;
+                border-radius: 6px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Modal Styles for App Settings
+.settings-form {
+  .settings-section {
+    margin-bottom: 1.5rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .section-title {
+      color: $primary-color;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba($primary-color, 0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+      
+      .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+    }
+    
+    .permission-checks {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem;
+      
+      .permission-check {
+        margin: 0;
+        
+        .form-check-input {
+          margin-top: 0.2rem;
+          
+          &:checked {
+            background-color: $primary-color;
+            border-color: $primary-color;
+          }
+          
+          &:focus {
+            box-shadow: 0 0 0 0.25rem rgba($primary-color, 0.25);
+          }
+        }
+        
+        .form-check-label {
+          font-weight: 500;
+        }
+      }
+    }
+    
+    .station-select {
+      .station-option {
+        display: flex;
+        align-items: center;
+        
+        .station-icon {
+          width: 20px;
+          height: 20px;
+          margin-right: 8px;
+          border-radius: 4px;
+        }
+        
+        .station-name {
+          flex: 1;
+        }
+        
+        .clear-icon {
+          cursor: pointer;
+          font-weight: bold;
+          margin-left: 8px;
+          font-size: 1.2rem;
+          opacity: 0.6;
+          
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+// NG-Select Customization
+::ng-deep {
+  .ng-select .ng-select-container {
+    border-radius: 8px;
+    min-height: 46px;
+    border: 1px solid $border-light;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: $transition-default;
+    
+    .ng-value-container {
+      padding-left: 0.75rem;
+    }
+    
+    .ng-placeholder {
+      color: $text-light;
+    }
+  }
+  
+  .ng-select.ng-select-focused .ng-select-container {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+  }
+  
+  .ng-dropdown-panel {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    
+    .ng-dropdown-panel-items {
+      .ng-option {
+        padding: 0.75rem 1rem;
+        
+        &.ng-option-selected, &.ng-option-marked {
+          background-color: rgba($primary-color, 0.1);
+          color: $primary-color;
+        }
+      }
+    }
+  }
+  
+  .ng-select.ng-select-multiple {
+    .ng-value-container .ng-value {
+      background-color: rgba($primary-color, 0.1);
+      color: $primary-color;
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+      margin: 0.25rem;
+      
+      .ng-value-label {
+        padding-left: 0;
+      }
+      
+      .ng-value-icon {
+        border: none;
+        padding-right: 0.25rem;
+        
+        &:hover {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+// Date Picker Customization
+::ng-deep {
+  .bs-datepicker-container {
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    
+    .bs-datepicker-head {
+      background-color: $primary-color;
+    }
+    
+    .bs-datepicker-body {
+      table td span.selected {
+        background-color: $primary-color;
+      }
+      
+      table td.week span {
+        color: $primary-color;
+      }
+      
+      table td {
+        &.selected span {
+          background-color: $primary-color !important;
+        }
+        
+        span:hover {
+          background-color: rgba($primary-color, 0.1);
+        }
+      }
+    }
+  }
+}
+
+// Modal Footer
+.modal-footer {
+  .footer-buttons {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: flex-end;
+    
+    @media (max-width: 575.98px) {
+      flex-direction: column;
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+  
+  .loading-indicator {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    
+    .spinner-border {
+      color: $primary-color;
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+}
+
+// Password Modal
+.invalid-feedback {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+// Dropdown Menu
+::ng-deep {
+  .dropdown-menu {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+    
+    .dropdown-item {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: $transition-default;
+      
+      &:hover {
+        background-color: rgba($primary-color, 0.1);
+        color: $primary-color;
+      }
+      
+      &:active {
+        background-color: rgba($primary-color, 0.2);
+      }
+      
+      &.text-danger {
+        color: $error-color !important;
+        
+        &:hover {
+          background-color: rgba($error-color, 0.1);
+          color: $error-color !important;
+        }
+      }
+    }
+    
+    .dropdown-divider {
+      margin: 0.25rem 0;
+      border-top: 1px solid $border-light;
+    }
+  }
+}
