@@ -1,0 +1,337 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h4>Fuel Stations</h4>
+</div>
+
+<div class="text-center" *ngIf="preLoading">
+  <div
+    class="spinner-border"
+    style="width: 3rem; height: 3rem; margin: 0 auto"
+    role="status"
+  >
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!preLoading">
+  <div class="row mb-3">
+    <div class="col">
+      <button
+        class="btn btn-primary text-white ms-3 bi-plus"
+        (click)="showAdd(addContent)"
+      >
+        Add Station
+      </button>
+      <button
+        class="btn btn-secondary text-white ms-3 bi-upload"
+        (click)="showImport(importContent)"
+      >
+        Import Discounts
+      </button>
+      <button
+        class="btn btn-success ms-3 bi-graph-down"
+        (click)="showDiscount(appleContent)"
+      >
+        Apply Discount
+      </button>
+      <button
+        class="btn btn-danger text-white ms-3 bi-backpack"
+        (click)="onRevertDiscounts()"
+      >
+        Revert Discounts
+      </button>
+      <button
+        class="btn btn-warning ms-3 bi-clock-history"
+        (click)="showFiles(filesContent)"
+      >
+        Discount Histories
+      </button>
+    </div>
+    <div class="col-auto">
+      <div class="input-group">
+        <input
+          type="search"
+          class="form-control"
+          [value]="searchTerm"
+          placeholder="Search..."
+          #searchElem
+        />
+        <button
+          class="btn btn-primary bi-search"
+          (click)="onSearch(searchElem.value)"
+        ></button>
+      </div>
+    </div>
+  </div>
+  <nav class="mb-3">
+    <div class="nav nav-tabs">
+      <a
+        class="nav-link"
+        *ngFor="let item of customers"
+        [class.active]="item.id == customerId"
+        [routerLink]="'/administrators/stations/' + item.id"
+      >
+        {{ item.name }}
+      </a>
+    </div>
+  </nav>
+  <table class="table">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Prices</th>
+        <th scope="col">Updated</th>
+        <th scope="col">Opened</th>
+        <th scope="col">Address</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items" [class.table-danger]="item.isEmpty">
+        <th scope="row">
+          <a
+            [href]="'https://maps.google.com?q=' + item.lat + ',' + item.lng"
+            target="_blank"
+          >
+            {{ item.name }}
+          </a>
+        </th>
+        <td>
+          <span>Discount: {{ item.discountPrice | currency }}, </span>
+          <span>Discounted: {{ item.bestPrice | currency }}, </span>
+          <span>Retail: {{ item.retailPrice | currency }}</span>
+        </td>
+        <td>
+          {{ item.priceUpdated | appDateTime }}
+        </td>
+        <td>
+          <span *ngIf="item.isOpen" class="badge bg-success"> Yes </span>
+          <span *ngIf="!item.isOpen" class="badge bg-warning text-dark">
+            No
+          </span>
+        </td>
+        <td>{{ item.address }}, {{ item.cityName }} , {{ item.cityName }}</td>
+        <td>
+          <div ngbDropdown container="body" class="d-flex justify-content-end">
+            <button
+              type="button"
+              class="btn btn-outline-primary bi-three-dots"
+              ngbDropdownToggle
+            ></button>
+            <div ngbDropdownMenu>
+              <button
+                ngbDropdownItem
+                (click)="onViewDiscounts(item, discountContent)"
+              >
+                Discounts
+              </button>
+              <button ngbDropdownItem (click)="showEdit(item, editContent)">
+                Edit
+              </button>
+              <button ngbDropdownItem [disabled]="true">Delete</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">
+          <p class="h4 text-secondary">Total: {{ totalRecords }}</p>
+        </th>
+        <td colspan="6">
+          <ngb-pagination
+            class="d-flex justify-content-center"
+            [collectionSize]="totalRecords"
+            [(page)]="pageNumber"
+            [maxSize]="5"
+            [pageSize]="25"
+            [boundaryLinks]="true"
+            (pageChange)="onChangePage($event)"
+          >
+          </ngb-pagination>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</ng-container>
+
+<ng-template #importContent let-modal>
+  <form [formGroup]="fileForm" (ngSubmit)="onUploadDiscounts(modal)">
+    <div class="modal-header">
+      <h4 class="modal-title">Import Discounts</h4>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="modal.dismiss('')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <input
+          class="form-control"
+          readonly
+          type="text"
+          placeholder="Select file"
+          formControlName="fileName"
+          (click)="excelFile.click()"
+        />
+        <input
+          #excelFile
+          type="file"
+          style="display: none"
+          (change)="onSelectFile($event)"
+          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        />
+        <button
+          class="btn btn-outline-danger bi bi-filetype-xlsx"
+          type="button"
+          (click)="excelFile.click()"
+          ngbTooltip="Only Excel file"
+        ></button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="submit"
+        class="btn btn-outline-success bi bi-cloud"
+        [disabled]="fileForm.invalid"
+        *ngIf="!importingDiscounts"
+      >
+        Upload
+      </button>
+      <button
+        class="btn btn-outline-success"
+        type="button"
+        disabled
+        *ngIf="importingDiscounts"
+      >
+        <span
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #filesContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Discount Histories</h4>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <app-discount-files [items]="files"></app-discount-files>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('')">
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #discountContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Station Discounts</h4>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <app-fuel-discounts [items]="discounts"></app-fuel-discounts>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('')">
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #appleContent let-modal>
+  <form [formGroup]="discountForm" (ngSubmit)="onApplyDiscount(modal)">
+    <div class="modal-header">
+      <h4 class="modal-title">Apply Discount</h4>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <input
+          class="form-control"
+          type="number"
+          placeholder="Enter amount"
+          formControlName="discount"
+        />
+        <button
+          class="btn btn-outline-danger bi bi-currency-dollar"
+          ngbTooltip="This differential price"
+          type="button"
+        ></button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="submit"
+        class="btn btn-outline-success bi bi-save2"
+        [disabled]="discountForm.invalid"
+        *ngIf="!applyingDiscount"
+      >
+        Save
+      </button>
+      <button
+        class="btn btn-outline-success"
+        type="button"
+        disabled
+        *ngIf="applyingDiscount"
+      >
+        <span
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #editContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Edit Station</h4>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
+  <app-update-station
+    [station]="selectedStation"
+    (saving)="onCloseEdit($event, modal)"
+  ></app-update-station>
+</ng-template>
+
+<ng-template #addContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Add Station</h4>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="modal.dismiss('')"
+    ></button>
+  </div>
+  <app-add-station
+    [station]="selectedStation"
+    (saving)="onCloseAdd($event, modal)"
+  ></app-add-station>
+</ng-template>

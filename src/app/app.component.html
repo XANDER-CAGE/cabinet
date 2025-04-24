@@ -1,0 +1,219 @@
+<header
+  [class]="
+    !isAuthorized ? 'unauth' : 'navbar sticky-top flex-md-nowrap p-0 shadow'
+  "
+>
+  <a
+    class="navbar-brand me-0 ps-3"
+    href="/"
+    *ngIf="currentRole == systemRoles.Administrator"
+  >
+    Administration
+  </a>
+  <a
+    class="navbar-brand me-0 ps-3"
+    href="/"
+    *ngIf="currentRole == systemRoles.Driver"
+  >
+    Driver
+  </a>
+  <a
+    class="navbar-brand me-0 ps-3"
+    href="/"
+    *ngIf="currentRole == systemRoles.Company"
+  >
+    Company
+  </a>
+  <form class="d-flex" *ngIf="isAuthorized">
+    <button class="btn btn-nick">{{ fullName }}</button>
+  </form>
+</header>
+
+<div [class]="isAuthorized ? 'container-fluid' : ''">
+  <div class="bg-white" style="height: 100vh" *ngIf="!isAuthorized">
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="row" *ngIf="isAuthorized">
+    <div class="sidebar border-right col-md-3 col-lg-2 p-0">
+      <div class="offcanvas-md offcanvas-end">
+        <div class="offcanvas-body flex-column overflow-y-auto">
+          <ul class="nav flex-column mt-3">
+            <ng-container *ngIf="currentRole == systemRoles.Driver">
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-fuel-pump"
+                  [class.active]="matchUrlPart('/drivers/stations')"
+                  href="/drivers/stations"
+                >
+                  Stations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-wallet"
+                  *ngIf="canSeeTransactions"
+                  [class.active]="matchUrlPart('/drivers/transactions')"
+                  href="/drivers/transactions"
+                >
+                  Transactions
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-receipt"
+                  *ngIf="canSeeInvoices"
+                  [class.active]="matchUrlPart('/drivers/invoices')"
+                  href="/drivers/invoices"
+                >
+                  Invoices
+                </a>
+              </li>
+            </ng-container>
+
+            <ng-container *ngIf="currentRole == systemRoles.Administrator">
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-fuel-pump"
+                  [class.active]="matchUrlPart('/administrators/stations')"
+                  href="/administrators/stations"
+                >
+                  Stations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-truck"
+                  [class.active]="matchUrlPart('/administrators/drivers')"
+                  href="/administrators/drivers"
+                >
+                  Drivers
+                </a>
+              </li>
+            </ng-container>
+
+            <ng-container *ngIf="currentRole == systemRoles.Company">
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-fuel-pump"
+                  [class.active]="matchUrlPart('/drivers/stations')"
+                  href="/drivers/stations"
+                >
+                  Stations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-wallet"
+                  [class.active]="matchUrlPart('/companies/transactions')"
+                  href="/companies/transactions"
+                >
+                  Transactions
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-receipt"
+                  [class.active]="matchUrlPart('/companies/invoices')"
+                  href="/companies/invoices"
+                >
+                  Invoices
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-truck"
+                  [class.active]="matchUrlPart('/companies/drivers')"
+                  href="/companies/drivers"
+                >
+                  Drivers
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+
+          <br />
+
+          <ul class="nav flex-column mb-auto border-top pt-3">
+            <ng-container *ngIf="currentRole == systemRoles.Driver">
+              <li class="nav-item">
+                <a
+                  class="nav-link d-flex align-items-center gap-2 bi-key"
+                  href="javascript:void(0)"
+                  (click)="onChangePassword(passwordContent)"
+                >
+                  Change Password
+                </a>
+              </li>
+            </ng-container>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2 bi-universal-access-circle"
+                (click)="onLogout()"
+              >
+                Sign out
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <main class="col-md-9 p-0 col-lg-10">
+      <div class="bg-white m-3 ps-3 main-content">
+        <router-outlet></router-outlet>
+      </div>
+      <p class="text-center">
+        <strong class="text-danger">Version: {{ appVersion }}</strong>
+      </p>
+    </main>
+  </div>
+</div>
+
+<ng-template #passwordContent let-modal>
+  <form [formGroup]="passwordForm" (ngSubmit)="submitChangePassword(modal)">
+    <div class="modal-header">
+      <h4 class="modal-title">Password</h4>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-4">
+        <label class="form-label required">Old Password</label>
+        <input
+          type="password"
+          formControlName="oldPassword"
+          class="form-control"
+        />
+      </div>
+      <div class="mb-4">
+        <label class="form-label required">New Password</label>
+        <input
+          type="password"
+          formControlName="newPassword"
+          class="form-control"
+        />
+      </div>
+      <div class="mb-4">
+        <label class="form-label required">Confirm Password</label>
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          class="form-control"
+        />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="submit"
+        class="btn btn-success"
+        [disabled]="passwordForm.invalid"
+      >
+        <i class="bi bi-key"></i> Change
+      </button>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,133 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "ufc-backoffice": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "Deploy/dist",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": [
+              "src/assets/css/bootstrap.min.css",
+              "src/assets/css/ngx-bootstrap/bs-datepicker.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/@trimblemaps/trimblemaps-js/trimblemaps.css",
+              "node_modules/@trimblemaps/trimblemaps-mapmenus/trimblemaps-mapmenus.css",
+              "node_modules/@trimblemaps/trimblemaps-singlesearch/trimblemaps-singlesearch.css",
+              "src/styles.scss"
+            ],
+            "scripts":
+            [
+              "src/assets/js/bootstrap.bundle.min.js",
+              "node_modules/@trimblemaps/trimblemaps-js/trimblemaps.js",
+              "node_modules/@trimblemaps/trimblemaps-mapmenus/trimblemaps-mapmenus.js",
+              "node_modules/@trimblemaps/trimblemaps-singlesearch/trimblemaps-singlesearch.js"
+          ],
+            "allowedCommonJsDependencies": [
+              "moment",
+              "moment-timezone",
+              "file-saver",
+              "@trimblemaps/trimblemaps-js",
+              "@trimblemaps/trimblemaps-mapmenus",
+              "@trimblemaps/trimblemaps-singlesearch"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "buildOptimizer": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "vendorChunk": false,
+              "extractLicenses": false,
+              "sourceMap": false,
+              "namedChunks": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "ufc-backoffice:build:production"
+            },
+            "development": {
+              "browserTarget": "ufc-backoffice:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "ufc-backoffice:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "9c671a6f-acb7-4532-b2aa-c638db9feb6b"
+  }
+}

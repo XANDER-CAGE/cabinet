@@ -1,0 +1,298 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h4>Fuel Stations</h4>
+</div>
+
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item">
+    <a
+      class="nav-link"
+      [class.active]="pageId == 1"
+      [href]="'/drivers/stations'"
+      >Map</a
+    >
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" [class.active]="pageId == 2" (click)="onListing()">
+      List
+    </button>
+  </li>
+</ul>
+
+<ng-container *ngIf="pageId == 1">
+  <div class="row mb-3 me-auto">
+    <div class="col-auto">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text">Station distance</span>
+        <input
+          type="number"
+          placeholder="Range 1-500 miles"
+          [(ngModel)]="distanceLocation"
+          style="max-width: 150px"
+          class="form-control"
+        />
+        <span class="input-group-text">Route directions</span>
+        <input
+          type="text"
+          placeholder="From location..."
+          [(ngModel)]="fromLocation"
+          [ngbTypeahead]="searchLocation"
+          [inputFormatter]="searchFormatter"
+          [resultTemplate]="searchResult"
+          class="form-control"
+          style="max-width: 300px"
+        />
+        <input
+          type="text"
+          placeholder="To location..."
+          [(ngModel)]="toLocation"
+          [ngbTypeahead]="searchLocation"
+          [inputFormatter]="searchFormatter"
+          [resultTemplate]="searchResult"
+          class="form-control"
+          style="max-width: 300px"
+        />
+        <button
+          type="submit"
+          class="btn btn-secondary"
+          [disabled]="searchingLocation || !isValidFilter"
+          (click)="onSearchRoute()"
+        >
+          Go
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          *ngIf="searchRoute"
+          (click)="onResetSearch()"
+          ngbTooltip="Clear filters"
+        >
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+      </div>
+    </div>
+    <div class="col">
+      <ol class="breadcrumb" *ngIf="distanceInfo">
+        <li class="breadcrumb-item">
+          Route info:
+          <span class="text-decoration-underline">{{ distanceInfo }}</span>
+        </li>
+      </ol>
+    </div>
+    <div class="col-auto">
+      <div class="btn-toolbar">
+        <div
+          class="form-check form-check-inline"
+          [class.non-action]="isLoading"
+          *ngFor="let item of customers"
+          [style]="
+            isSelectedCustomer(item)
+              ? { 'background-color': item.markerColor, color: 'white' }
+              : {}
+          "
+        >
+          <label class="form-check-label customer-label p-2">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [style]="isSelectedCustomer(item)?{ 'background-color': item.markerColor,'border': 'none',}:{}"
+              [(ngModel)]="item.checked"
+              (ngModelChange)="onChangeCustomer()"
+            />
+            {{ item.name }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ps-0 pb-3" style="height: 75vh">
+    <as-split direction="horizontal">
+      <as-split-area [size]="70">
+        <div id="map" [class.non-action]="isLoading"></div>
+      </as-split-area>
+      <as-split-area [size]="30">
+        <div
+          *ngIf="isLoading"
+          class="spinner-border m-auto d-block"
+          style="width: 3rem; height: 3rem; margin: 0 auto"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div *ngIf="!isLoading" class="m-3">
+          <div class="text-danger h4 text-center" *ngIf="!stations.length">
+            No station(s)
+          </div>
+          <div
+            class="row border-bottom station-item mb-2 d-flex justify-content-between align-items-start"
+            *ngFor="let item of stations"
+            [class.active]="selectedStationId == item.id"
+            (click)="onSelectStation(item)"
+            [id]="'station-item-' + item.id"
+            [ngStyle]="
+              selectedStationId == item.id
+                ? { 'background-color': getMarkerColor(item.customerId) }
+                : {}
+            "
+          >
+            <div class="col-auto d-flex">
+              <img
+                [src]="customerIcons[item.customerId]"
+                class="rounded align-items-baseline"
+                [alt]="item.customerName"
+              />
+            </div>
+            <div class="col">
+              <div class="row mb-1">
+                <div class="col-6" *ngIf="canSeeDiscountPrices">
+                  Discount:
+                  <span class="badge bg-warning text-dark">{{
+                    item.discountPrice | currency
+                  }}</span>
+                </div>
+                <div class="col-6" *ngIf="canSeeDiscountedPrices">
+                  Discounted:
+                  <span class="badge bg-warning text-dark">{{
+                    item.bestPrice | currency
+                  }}</span>
+                </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col-6">
+                  <strong>{{ item.name }}</strong>
+                </div>
+                <div class="col-6">
+                  Retail:
+                  <span class="badge bg-secondary text-white">{{
+                    item.retailPrice | currency
+                  }}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <span
+                    >{{ item.address }}, {{ item.cityName }},
+                    {{ item.stateName }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </as-split-area>
+    </as-split>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="pageId == 2">
+  <div
+    *ngIf="isLoading"
+    class="spinner-border m-auto d-block"
+    style="width: 3rem; height: 3rem; margin: 0 auto"
+    role="status"
+  >
+    <span class="visually-hidden">Loading...</span>
+  </div>
+
+  <div class="row mb-3 me-0">
+    <div class="col"></div>
+    <div class="col-auto">
+      <div ngbDropdown container="body">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          id="dropdownBasic1"
+          ngbDropdownToggle
+        >
+          Filter chains
+        </button>
+        <div ngbDropdownMenu>
+          <button
+            ngbDropdownItem
+            *ngFor="let item of customers"
+            (click)="filterChains(item.id)"
+          >
+            {{ item.name }}
+          </button>
+          <div class="dropdown-divider"></div>
+          <button
+            type="button"
+            class="text-danger"
+            ngbDropdownItem
+            (click)="filterChains(null)"
+          >
+            View All
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto">
+      <input
+        type="search"
+        class="form-control"
+        [(ngModel)]="searchTerm"
+        placeholder="Search term..."
+      />
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading" style="overflow: auto; height: 75vh">
+    <table class="table">
+      <thead class="table-dark sticky-top">
+        <tr>
+          <th scope="col">Station</th>
+          <th scope="col">Retail Price</th>
+          <th scope="col">Best Price</th>
+          <th scope="col">Discount Price</th>
+          <th scope="col">Updated Time</th>
+          <th scope="col">State</th>
+          <th scope="col">City</th>
+          <th scope="col">Address</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="!stations.length">
+        <td colspan="8">
+          <div class="text-danger h4 text-center">No station(s)</div>
+        </td>
+      </tbody>
+      <tbody *ngIf="stations.length">
+        <tr *ngFor="let item of stations | appFilter : searchTerm">
+          <th scope="row">
+            <a
+              [href]="'https://maps.google.com?q=' + item.lat + ',' + item.lng"
+              target="_blank"
+              >{{ item.name }}
+            </a>
+          </th>
+          <td>
+            {{ item.retailPrice | currency }}
+          </td>
+          <td>
+            {{ item.bestPrice | currency }}
+          </td>
+          <td>
+            {{ item.discountPrice | currency }}
+          </td>
+          <td>
+            {{ item.priceUpdated | appDateTime }}
+          </td>
+          <td>
+            {{ item.stateName }}
+          </td>
+          <td>
+            {{ item.cityName }}
+          </td>
+          <td>
+            {{ item.address }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+
+<ng-template #searchResult let-r="result" let-t="term">
+  <ngb-highlight [result]="r.shortString" [term]="t"></ngb-highlight>
+</ng-template>

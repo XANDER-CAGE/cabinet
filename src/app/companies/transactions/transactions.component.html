@@ -1,0 +1,139 @@
+<form
+  class="input-group pe-3"
+  [formGroup]="filterForm"
+  (ngSubmit)="loadList()"
+>
+  <div class="w-100 d-flex flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h4 class="">Transactions</h4>
+    <div class="ms-auto">
+      <input
+        bsDaterangepicker
+        [bsConfig]="{ adaptivePosition: true, showPreviousMonth: true }"
+        formControlName="dateRange"
+        class="form-control"
+      />
+    </div>
+    <ng-select
+      [items]="[{name: 'Active', value: true}, {name: 'Inactive', value: false}]"
+      bindLabel="name"
+      bindValue="value"
+      formControlName="isActive"
+      placeholder="Card Status"
+      style="width: 150px;"
+      (change)="onChangeActive($event)"
+      (clear)="onChangeActive(null)"
+    >
+    </ng-select>
+    <ng-select
+      [items]="driverCards"
+      bindLabel="name"
+      bindValue="id"
+      formControlName="cardNumber"
+      placeholder="Select card"
+      style="width: 35%!important;"
+      (change)="onChangeCard($event)"
+      (clear)="onChangeCard(null)"
+    >
+    </ng-select>
+    <button class="btn btn-success btn-sm" type="submit">
+      <i class="bi bi-filter"></i>
+      Filter
+    </button>
+  </div>
+</form>
+
+<div class="text-center" *ngIf="preLoading">
+  <div
+    class="spinner-border"
+    style="width: 3rem; height: 3rem; margin: 0 auto"
+    role="status"
+  >
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!preLoading">
+  <table class="table">
+    <thead class="table-dark">
+    <tr>
+      <th scope="col">Transaction Date</th>
+      <th scope="col">Card Number</th>
+      <th scope="col">Unit Price</th>
+      <th scope="col">Fees</th>
+      <th scope="col">Discount</th>
+      <th scope="col">Amount</th>
+      <th scope="col">State</th>
+      <th scope="col">City</th>
+      <th scope="col">Location</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of items">
+      <th scope="row">
+        {{ item.transactionDate | date : "yyyy.MM.dd" }}
+      </th>
+      <td>
+        {{ item.cardNumber }}
+      </td>
+      <td>
+        {{ item.unitPrice | number }}
+      </td>
+      <td>
+        {{ item.fees | number }}
+      </td>
+      <td>
+        {{ item.discAmount | number }}
+      </td>
+      <td>
+        {{ item.amount | number }}
+      </td>
+      <td>
+        {{ item.state }}
+      </td>
+      <td>
+        {{ item.city }}
+      </td>
+      <td>
+        {{ item.locationName }}
+      </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr class="table-dark">
+      <th colspan="2">Total:</th>
+      <td>
+        {{ items | sum : "unitPrice" | number }}
+      </td>
+      <td>
+        {{ items | sum : "fees" | number }}
+      </td>
+      <td>
+        {{ items | sum : "discAmount" | number }}
+      </td>
+      <td>
+        {{ items | sum : "amount" | number }}
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th scope="row">
+        <p class="h4 text-secondary">Records: {{ totalRecords }}</p>
+      </th>
+      <td colspan="8">
+        <ngb-pagination
+          class="d-flex justify-content-center"
+          [collectionSize]="totalRecords"
+          [(page)]="pageNumber"
+          [maxSize]="5"
+          [pageSize]="pageSize"
+          [boundaryLinks]="true"
+          (pageChange)="onChangePage($event)"
+        >
+        </ngb-pagination>
+      </td>
+    </tr>
+    </tfoot>
+  </table>
+</ng-container>

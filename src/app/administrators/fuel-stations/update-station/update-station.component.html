@@ -1,0 +1,82 @@
+<div class="modal-body" [formGroup]="updateForm">
+  <div class="mb-3">
+    <label class="form-label required">ID</label>
+    <input class="form-control" formControlName="identifier" />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label required">Order</label>
+    <input class="form-control" formControlName="number" />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input
+      class="form-control"
+      [value]="selectedStation.customerName + ' ' + updateForm.value.number"
+      [readOnly]="true"
+      [disabled]="true"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label required">State</label>
+    <ng-select
+      [items]="states"
+      bindLabel="name"
+      bindValue="id"
+      formControlName="stateId"
+      placeholder="Select state"
+      (change)="loadCities()"
+    >
+    </ng-select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label required">City</label>
+    <ng-select
+      [items]="cities"
+      bindLabel="name"
+      bindValue="id"
+      formControlName="cityId"
+      placeholder="Select city"
+    >
+    </ng-select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label required">Address</label>
+    <textarea class="form-control" formControlName="address"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label required">Location</label>
+    <div class="input-group">
+      <input
+        type="number"
+        class="form-control"
+        formControlName="lat"
+        placeholder="Enter Lat"
+      />
+      <input
+        type="number"
+        class="form-control"
+        formControlName="lng"
+        placeholder="Enter Lng"
+      />
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="onClose()">
+    Close
+  </button>
+  <button
+    type="submit"
+    class="btn btn-success"
+    (click)="onSubmit()"
+    [disabled]="updateForm.invalid"
+  >
+    Save
+  </button>
+</div>

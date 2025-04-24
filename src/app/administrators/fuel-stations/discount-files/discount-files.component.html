@@ -1,0 +1,31 @@
+<table class="table">
+  <thead class="table-dark">
+    <tr>
+      <th scope="col">File</th>
+      <th scope="col">Time</th>
+      <th scope="col">Success</th>
+      <th scope="col">Process</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of files">
+      <th scope="row">
+        <button type="button" (click)="downloadFile(item)" class="btn btn-link" [disabled]="downloadingProcess">
+          {{ item.fileName }}
+        </button>
+      </th>
+      <td>
+        {{ item.uploadTime | appDateTime }}
+      </td>
+      <td>
+        <span *ngIf="item.isImported" class="badge bg-success"> Yes </span>
+        <span *ngIf="!item.isImported" class="badge bg-warning text-dark">
+          No
+        </span>
+      </td>
+      <td>
+        {{ item.executionResult }}
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,143 @@
+@import "~bootstrap-icons/font/bootstrap-icons.min.css";
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
+body {
+  background: #ddd;
+}
+
+.nav-link {
+  cursor: pointer;
+
+  .bi {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+  display: none;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+}
+
+.trimblemaps-popup {
+  width: 275px;
+  .trimblemaps-popup-content {
+    border-radius: 0.25rem;
+    padding: 0.35em 0.65em;
+
+    .trimblemaps-popup-close-button {
+      font-size: 24px;
+      font-weight: bold;
+      margin-right: 5px;
+    }
+  }
+}
+
+.trimble-maps-popup-color1 {
+  .trimblemaps-popup-tip {
+    border-top-color: rgb(217, 34, 42);
+  }
+  .trimblemaps-popup-content {
+    border: 5px solid rgb(217, 34, 42);
+
+    .trimblemaps-popup-close-button {
+      color: rgb(217, 34, 42);
+    }
+  }
+}
+
+.trimble-maps-popup-color2 {
+  .trimblemaps-popup-tip {
+    border-top-color: #198754;
+  }
+  .trimblemaps-popup-content {
+    border: 5px solid #198754;
+
+    .trimblemaps-popup-close-button {
+      color: #198754;
+    }
+  }
+}
+
+.trimble-maps-popup-color3 {
+  .trimblemaps-popup-tip {
+    border-top-color: rgb(15, 172, 221);
+  }
+  .trimblemaps-popup-content {
+    border: 5px solid rgb(15, 172, 221);
+
+    .trimblemaps-popup-close-button {
+      color: rgb(15, 172, 221);
+    }
+  }
+}
+
+.trimble-maps-popup-color4 {
+  .trimblemaps-popup-tip {
+    border-top-color: rgb(255, 203, 12);
+  }
+  .trimblemaps-popup-content {
+    border: 5px solid rgb(255, 203, 12);
+
+    .trimblemaps-popup-close-button {
+      color: rgb(255, 203, 12);
+    }
+  }
+}
+
+.rating-lg {
+  span {
+    font-size: 2rem;
+  }
+}
+
+.map-contextMenu {
+  background-color: #e2e2e2;
+  border: 1px solid #667582;
+  padding: 0;
+  z-index: 1000;
+  width: 150px;
+  box-shadow: 1px 1px 6px 0px rgba(0, 0, 0, 0.2);
+  cursor: context-menu;
+
+  ul {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+    list-style: none;
+
+    &.separator {
+      list-style: none;
+      border-bottom: 1px solid #999;
+    }
+
+    a {
+      display: block;
+      padding: 3px 8px 3px 6px;
+      &:hover {
+        background-color: #94cced;
+      }
+    }
+  }
+}
+
+.form-label.required::after {
+  content: " *";
+  font-weight: bold;
+  color: red;
+}
+
+.non-action {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}

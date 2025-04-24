@@ -1,0 +1,100 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h4>Transactions</h4>
+  <form
+  class="input-group w-25 me-3"
+  [formGroup]="filterForm"
+  (ngSubmit)="loadList()"
+>
+  <input
+    bsDaterangepicker
+    [bsConfig]="{ adaptivePosition: true, showPreviousMonth: true }"
+    formControlName="dateRange"
+    class="form-control"
+  />
+  <button class="btn btn-success btn-sm" type="submit">
+    <i class="bi bi-filter"></i>
+    Filter
+  </button>
+</form>
+</div>
+
+<div class="text-center" *ngIf="preLoading">
+  <div
+    class="spinner-border"
+    style="width: 3rem; height: 3rem; margin: 0 auto"
+    role="status"
+  >
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!preLoading">
+  <table class="table">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Transaction Date</th>
+        <th scope="col">Card Number</th>
+        <th scope="col">Unit Price</th>
+        <th scope="col">Fees</th>
+        <th scope="col">Discount</th>
+        <th scope="col">Amount</th>
+        <th scope="col">State</th>
+        <th scope="col">City</th>
+        <th scope="col">Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items">
+        <th scope="row">
+          {{ item.transactionDate | date : "yyyy.MM.dd" }}
+        </th>
+        <td>
+          {{ item.cardNumber }}
+        </td>
+        <td>
+          {{ item.unitPrice | number }}
+        </td>
+        <td>
+          {{ item.fees | number }}
+        </td>
+        <td>
+          {{ item.discAmount | number }}
+        </td>
+        <td>
+          {{ item.amount | number }}
+        </td>
+        <td>
+          {{ item.state }}
+        </td>
+        <td>
+          {{ item.city }}
+        </td>
+        <td>
+          {{ item.locationName }}
+        </td>
+      </tr>
+    </tbody>
+    <tfoot class="table-dark">
+      <tr>
+        <th colspan="2">Total:</th>
+        <td>
+          {{ items | sum : "unitPrice" | number }}
+        </td>
+        <td>
+          {{ items | sum : "fees" | number }}
+        </td>
+        <td>
+          {{ items | sum : "discAmount" | number }}
+        </td>
+        <td>
+          {{ items | sum : "amount" | number }}
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</ng-container>

@@ -1,0 +1,135 @@
+<form
+  class="input-group pe-3"
+  [formGroup]="filterForm"
+  (ngSubmit)="loadList()"
+>
+  <div
+    class="w-100 d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+  >
+    <h4>Invoices</h4>
+    <div class="ms-auto">
+      <input
+        bsDaterangepicker
+        [bsConfig]="{ adaptivePosition: true, showPreviousMonth: true }"
+        formControlName="dateRange"
+        class="form-control"
+      />
+    </div>
+    <ng-select
+      [items]="[{name: 'Active', value: true}, {name: 'Inactive', value: false}]"
+      bindLabel="name"
+      bindValue="value"
+      formControlName="isActive"
+      placeholder="Card Status"
+      style="width: 150px;"
+      (change)="onChangeActive($event)"
+      (clear)="onChangeActive(null)"
+    >
+    </ng-select>
+    <ng-select
+      [items]="driverCards"
+      bindLabel="name"
+      bindValue="id"
+      formControlName="cardNumber"
+      placeholder="Select card"
+      style="width: 35%!important;"
+      (change)="onChangeCard($event)"
+      (clear)="onChangeCard(null)"
+    >
+    </ng-select>
+    <button class="btn btn-success btn-sm" type="submit">
+      <i class="bi bi-filter"></i>
+      Filter
+    </button>
+    <button class="btn btn-primary btn-sm" (click)="printFile()" type="button">
+      <i class="bi bi-file-pdf"></i>
+      Print
+    </button>
+  </div>
+</form>
+
+<div class="text-center" *ngIf="preLoading">
+  <div
+    class="spinner-border"
+    style="width: 3rem; height: 3rem; margin: 0 auto"
+    role="status"
+  >
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!preLoading">
+  <table class="table">
+    <thead class="table-dark">
+    <tr>
+      <th scope="col">Invoice Number</th>
+      <th scope="col">Invoice Period</th>
+      <th scope="col">Status</th>
+      <th scope="col">Total Discount</th>
+      <th scope="col">Total Amount</th>
+      <th scope="col">Avg Discount Gallon</th>
+      <th scope="col">Total Discounted Gallons</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of items">
+      <th scope="row">
+        {{ item.invoiceNumber }}
+      </th>
+      <td>
+        {{ item.startPeriod | date : "yyyy.MM.dd" }} -
+        {{ item.endPeriod | date : "yyyy.MM.dd" }}
+      </td>
+      <td>
+        {{ item.status }}
+      </td>
+      <td>
+        {{ item.totalDiscount | number }}
+      </td>
+      <td>
+        {{ item.totalAmount | number }}
+      </td>
+      <td>
+        {{ item.averageDiscountPerGallon | number }}
+      </td>
+      <td>
+        {{ item.totalDiscountedGallons | number }}
+      </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr class="table-dark">
+      <th colspan="3">Total:</th>
+      <td>
+        {{ items | sum : "totalDiscount" | number }}
+      </td>
+      <td>
+        {{ items | sum : "totalAmount" | number }}
+      </td>
+      <td>
+        {{ items | sum : "averageDiscountPerGallon" | number }}
+      </td>
+      <td>
+        {{ items | sum : "totalDiscountedGallons" | number }}
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        <p class="h4 text-secondary">Records: {{ totalRecords }}</p>
+      </th>
+      <td colspan="6">
+        <ngb-pagination
+          class="d-flex justify-content-center"
+          [collectionSize]="totalRecords"
+          [(page)]="pageNumber"
+          [maxSize]="5"
+          [pageSize]="pageSize"
+          [boundaryLinks]="true"
+          (pageChange)="onChangePage($event)"
+        >
+        </ngb-pagination>
+      </td>
+    </tr>
+    </tfoot>
+  </table>
+</ng-container>

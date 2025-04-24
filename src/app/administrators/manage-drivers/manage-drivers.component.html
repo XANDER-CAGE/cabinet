@@ -1,0 +1,408 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h4>Manage Drivers</h4>
+  <form
+    class="input-group w-50 me-3"
+    [formGroup]="filterForm"
+    (ngSubmit)="loadList()"
+  >
+    <input
+      bsDaterangepicker
+      #datePicker
+      [bsConfig]="{ adaptivePosition: true, showPreviousMonth: true }"
+      formControlName="dateRange"
+      placeholder="Date range"
+      class="form-control"
+    />
+    <input
+      type="search"
+      class="form-control"
+      formControlName="searchTerm"
+      placeholder="Query term"
+    />
+    <span
+      class="input-group-text"
+      style="cursor: pointer"
+      (click)="filterForm.reset(); loadList()"
+    >
+      <i class="bi bi-arrow-counterclockwise"></i>
+      Reset
+    </span>
+    <button class="btn btn-success btn-sm" type="submit">
+      <i class="bi bi-search"></i>
+      Search
+    </button>
+  </form>
+</div>
+
+<div class="text-center" *ngIf="preLoading">
+  <div
+    class="spinner-border"
+    style="width: 3rem; height: 3rem; margin: 0 auto"
+    role="status"
+  >
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<ng-container *ngIf="!preLoading">
+  <div class="row mb-3">
+    <div class="col">
+      <div ngbDropdown class="d-inline-block">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          [disabled]="downloadingFile"
+          ngbDropdownToggle
+        >
+          Activity reports
+        </button>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem (click)="downloadActivity(false)">
+            Summary report
+          </button>
+          <button ngbDropdownItem (click)="downloadActivity(true)">
+            Device sessions
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto"></div>
+  </div>
+  <table class="table">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">E-mail</th>
+        <th scope="col">Company</th>
+        <th scope="col">App Permissions</th>
+        <th scope="col">Fuel Stations</th>
+        <th scope="col">Registered</th>
+        <th scope="col">Confirmed</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let item of items"
+        [class.table-secondary]="item.roleCode == roleCode.Company"
+      >
+        <th scope="row">
+          {{ item.fullName }}
+        </th>
+        <td>
+          {{ item.email }}
+        </td>
+        <td>
+          {{ item.companyName }}
+        </td>
+        <td>
+          <ng-container  *ngIf="item.permissionList.length">
+            <span *ngIf="canSeePermission(item, permissionList.CAN_VIEW_INVOICES)">Invoices, </span>
+            <span *ngIf="canSeePermission(item, permissionList.CAN_VIEW_TRANSACTIONS)">Transactions, </span>
+            <span *ngIf="canSeePermission(item, permissionList.SHOW_DISCOUNT_PRICES)">Discount prices, </span>
+            <span *ngIf="canSeePermission(item, permissionList.SHOW_DISCOUNTED_PRICES)">Discounted prices</span>
+          </ng-container>
+          <strong class="text-danger" *ngIf="!item.permissionList.length"
+            >(None)</strong
+          >
+        </td>
+        <td>
+          <strong class="text-success" *ngIf="!item.includeStations.length"
+            >All</strong
+          >
+          <span *ngIf="item.includeStations.length">
+            <ng-container *ngFor="let station of item.includeStations"
+              >{{ getCustomerName(station) }},
+            </ng-container>
+          </span>
+        </td>
+        <td>
+          {{ item.registerTime | appDateTime }}
+        </td>
+        <td>
+          <span *ngIf="item.confirmed" class="badge bg-success"> Yes </span>
+          <span *ngIf="!item.confirmed" class="badge bg-warning text-dark">
+            No
+          </span>
+        </td>
+        <td>
+          <div ngbDropdown class="d-flex justify-content-end" container="body">
+            <button
+              type="button"
+              class="btn btn-outline-primary bi-three-dots"
+              ngbDropdownToggle
+            ></button>
+            <div ngbDropdownMenu>
+              <button
+                ngbDropdownItem
+                (click)="onConfirm(item)"
+                *ngIf="!item.confirmed"
+              >
+                Confirm
+              </button>
+              <button
+                ngbDropdownItem
+                (click)="onChangePassword(item, passwordContent)"
+                *ngIf="item.confirmed"
+              >
+                Set password
+              </button>
+              <button
+                ngbDropdownItem
+                (click)="onEditSettings(item, applyContent)"
+                *ngIf="item.confirmed"
+              >
+                App Settings
+              </button>
+              <button
+                ngbDropdownItem
+                (click)="onMoveCompany(item)"
+                *ngIf="item.confirmed && item.roleCode == roleCode.Driver"
+              >
+                Move Company
+              </button>
+              <button
+                ngbDropdownItem
+                (click)="onRevertDriver(item)"
+                *ngIf="item.confirmed && item.roleCode == roleCode.Company"
+              >
+                Revert Driver
+              </button>
+              <button ngbDropdownItem (click)="onDelete(item)">Delete</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">
+          <p class="h4 text-secondary">Total: {{ totalRecords }}</p>
+        </th>
+        <td colspan="7">
+          <ngb-pagination
+            class="d-flex justify-content-center"
+            [collectionSize]="totalRecords"
+            [(page)]="pageNumber"
+            [maxSize]="5"
+            [pageSize]="25"
+            [boundaryLinks]="true"
+            (pageChange)="onChangePage($event)"
+          >
+          </ngb-pagination>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</ng-container>
+
+<ng-template #applyContent let-modal>
+  <form [formGroup]="settingsForm" (ngSubmit)="onApplySettings(modal)">
+    <div class="modal-header">
+      <h4 class="modal-title">App Settings</h4>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <fieldset>
+        <legend>Accounting</legend>
+        <div class="mb-3">
+          <label class="form-label">Organizations</label>
+          <ng-select
+            [items]="organizations"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="organizationId"
+            placeholder="Select organization"
+            (change)="onChangeOrganization($event)"
+          >
+          </ng-select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">EFS Accounts</label>
+          <ng-select
+            [items]="efsAccounts"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="efsAccountId"
+            placeholder="Select EFS account"
+            (change)="onChangeEfsAccount($event)"
+          >
+          </ng-select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Companies</label>
+          <ng-select
+            [items]="companies"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="companyId"
+            placeholder="Select company"
+            (change)="onChangeCompany($event)"
+          >
+          </ng-select>
+        </div>
+        <div class="mb-3" *ngIf="selectedDriver.roleCode == roleCode.Driver">
+          <label class="form-label">Account Cards</label>
+          <ng-select
+            [items]="driverCards"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="cardNumber"
+            placeholder="Select Account card"
+            (change)="onChangeCard($event)"
+          >
+          </ng-select>
+        </div>
+      </fieldset>
+
+      <ng-container *ngIf="selectedDriver.roleCode == roleCode.Driver">
+        <fieldset class="mb-3">
+          <legend>Dashboard</legend>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                formControlName="viewInvoices"
+              />
+              Can view invoices?
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                formControlName="viewTransactions"
+              />
+              Can view transactions?
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                formControlName="shownDiscountPrices"
+              />
+              Shown Discount prices?
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                formControlName="shownDiscountedPrices"
+              />
+              Shown Discounted prices?
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="mb-3">
+          <legend>Stations</legend>
+          <ng-select
+            [items]="customers"
+            [multiple]="true"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Select chains"
+            formControlName="stations"
+          >
+            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+              <span class="ng-value-label"
+                ><img [src]="item.iconUrl" width="20px" height="20px" />
+                {{ item.name }}</span
+              >
+              <span
+                class="ng-value-icon right"
+                (click)="clear(item)"
+                aria-hidden="true"
+                >×</span
+              >
+            </ng-template>
+
+            <ng-template ng-option-tmp let-item="item">
+              <img [src]="item.iconUrl" width="20px" height="20px" />
+              {{ item.name }}
+            </ng-template>
+          </ng-select>
+        </fieldset>
+      </ng-container>
+    </div>
+    <div class="modal-footer">
+      <ng-container *ngIf="!applyingSettings">
+        <button
+          type="button"
+          class="btn btn-outline-danger bi bi-arrow-counterclockwise"
+          (click)="onResetSettings(modal)"
+        >
+          Reset
+        </button>
+        <button
+          type="submit"
+          class="btn btn-outline-success bi bi-save2"
+          [disabled]="settingsForm.invalid"
+        >
+          Apply
+        </button>
+      </ng-container>
+      <span
+        class="spinner-border"
+        style="width: 2rem; height: 2rem; margin: 0 auto"
+        role="status"
+        *ngIf="applyingSettings"
+        aria-hidden="true"
+      ></span>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #passwordContent let-modal>
+  <form [formGroup]="passwordForm" (ngSubmit)="submitChangePassword(modal)">
+    <div class="modal-header">
+      <h4 class="modal-title">Password</h4>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-4">
+        <label class="form-label required">New Password</label>
+        <input
+          type="password"
+          formControlName="newPassword"
+          class="form-control"
+        />
+      </div>
+      <div class="mb-4">
+        <label class="form-label required">Confirm Password</label>
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          class="form-control"
+        />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="submit"
+        class="btn btn-success"
+        [disabled]="passwordForm.invalid"
+      >
+        <i class="bi bi-key"></i> Change
+      </button>
+    </div>
+  </form>
+</ng-template>

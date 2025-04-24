@@ -1,0 +1,42 @@
+<form
+  [formGroup]="loginForm"
+  [className]="'form-signin'"
+  (ngSubmit)="onSubmit(captcha)"
+>
+  <div
+    class="d-flex justify-content-center flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"
+  >
+    <img src="assets/images/logo.png"/>
+  </div>
+  <div class="mb-3">
+    <label class="form-label required">Email</label>
+    <input type="email" formControlName="email" class="form-control" />
+  </div>
+  <div class="mb-4">
+    <label class="form-label required">Password</label>
+    <input type="password" formControlName="password" class="form-control" />
+  </div>
+  <div class="mb-4">
+    <ngx-recaptcha2
+      [siteKey]="siteKey"
+      #captcha
+      [useGlobalDomain]="false"
+      hl="en"
+      formControlName="captcha"
+    >
+    </ngx-recaptcha2>
+  </div>
+  <div class="mb-3">
+    <button
+      type="submit"
+      class="btn btn-primary m-auto btn-lg"
+      [disabled]="loginForm.invalid || loginSubmitting"
+    >
+      <i class="bi bi-box-arrow-in-right"></i> Login
+    </button>
+  </div>
+</form>
+
+<p class="text-center">
+  <a routerLink="/register">Don't have an account?</a>
+</p>
